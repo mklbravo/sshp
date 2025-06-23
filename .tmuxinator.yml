@@ -1,0 +1,7 @@
+# ./.tmuxinator.yml
+
+name: "sshp"
+
+windows:
+  - editor: nvim
+  - shell: clear

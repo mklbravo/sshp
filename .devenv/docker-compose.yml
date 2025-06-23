@@ -1,0 +1,16 @@
+services:
+  main:
+    environment:
+      GH_TOKEN: "${GH_TOKEN}"
+    hostname: "sshp-main"
+    image: "ghcr.io/mklbravo/devimage:go-1.23"
+    secrets:
+      - "ssh_private_key"
+    volumes:
+      - "../:/src"
+      - "~/.config/github-copilot:/root/.config/github-copilot"
+    working_dir: "/src"
+
+secrets:
+  ssh_private_key:
+    file: "${SSH_PRIVATE_KEY}"
