@@ -1,27 +1,30 @@
-package intrastructure
+package infrastructure
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/mklbravo/sshp/domain"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
 )
 
-func StartSSHSession(user, password, host string) (*ssh.Session, error) {
+func StartSSHSession(host *domain.Host) (*ssh.Session, error) {
+
 	// SSH client configuration
 	config := &ssh.ClientConfig{
-		User: user,
+		User: host.Username,
 		Auth: []ssh.AuthMethod{
-			ssh.Password(password),
+			ssh.Password("TODO"),
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(), // WARNING: for testing only
 	}
 
 	// Connect to the SSH server
-	client, err := ssh.Dial("tcp", host, config)
+	client, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", host.IP, host.Port), config)
 	if err != nil {
 		return nil, err
 	}

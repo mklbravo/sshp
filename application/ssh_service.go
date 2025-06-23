@@ -1,9 +1,12 @@
 package application
 
-import intrastructure "github.com/mklbravo/sshp/infrastructure"
+import (
+	"github.com/mklbravo/sshp/domain"
+	"github.com/mklbravo/sshp/infrastructure"
+)
 
-func ConnectToSSHHost(user, password, host string) {
-	sshSession, _ := intrastructure.StartSSHSession(user, password, host)
-	intrastructure.RunSSHShell(sshSession)
+func ConnectToSSHHost(host *domain.Host) {
+	sshSession, _ := infrastructure.StartSSHSession(host)
+	infrastructure.RunSSHShell(sshSession)
 	defer sshSession.Close()
 }
