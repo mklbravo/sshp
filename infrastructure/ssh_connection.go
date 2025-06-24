@@ -24,7 +24,7 @@ func StartSSHSession(host *domain.Host) (*ssh.Session, error) {
 	}
 
 	// Connect to the SSH server
-	client, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", host.IP, host.Port), config)
+	client, err := ssh.Dial("tcp", host.GetFullAddress(), config)
 	if err != nil {
 		return nil, err
 	}
