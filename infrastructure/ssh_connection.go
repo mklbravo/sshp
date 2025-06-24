@@ -18,7 +18,7 @@ func StartSSHSession(host *domain.Host) (*ssh.Session, error) {
 	config := &ssh.ClientConfig{
 		User: host.Username,
 		Auth: []ssh.AuthMethod{
-			ssh.Password("TODO"),
+			ssh.PublicKeys(getPrivateKeySigner()), // Use private key for authentication
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(), // WARNING: for testing only
 	}
@@ -78,4 +78,21 @@ func RunSSHShell(this *ssh.Session) {
 		log.Fatalf("failed to start shell: %s", err)
 	}
 	this.Wait()
+}
+
+func getPrivateKeySigner() ssh.Signer {
+	// TODO: Make this configurable
+	keyPath := fmt.Sprintf("%s/.ssh/id_rsa", os.Getenv("HOME"))
+
+	key, err := os.ReadFile(keyPath)
+	if err != nil {
+		log.Fatalf("unable to read private key: %v", err)
+	}
+
+	signer, err := ssh.ParsePrivateKey(key)
+	if err != nil {
+		log.Fatalf("unable to parse private key: %v", err)
+	}
+
+	return signer
 }
