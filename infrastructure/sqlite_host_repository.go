@@ -12,19 +12,15 @@ type SqliteHostRepository struct {
     db *sql.DB
 }
 
-func NewSqliteHostRepository(db *sql.DB) repository.HostRepository {
-    return &SqliteHostRepository{db: db}
-}
-
-func (r *SqliteHostRepository) FindByID(id string) (*entities.Host, error) {
-    row := r.db.QueryRow("SELECT id, name, ip, port FROM hosts WHERE id = ?", id)
-    var host entities.Host
-    var name, ip string
+// scanHostRow scans a single row (from QueryRow) into a Host entity.
+func scanHostRow(scanner interface {
+    Scan(dest ...interface{}) error
+}) (*entities.Host, error) {
+    var id, name, ip string
     var port int
-    if err := row.Scan(&host.ID, &name, &ip, &port); err != nil {
+    if err := scanner.Scan(&id, &name, &ip, &port); err != nil {
         return nil, err
     }
-    host.Name = valueobjects.HostName(name)
     ipVO, err := valueobjects.NewIP(ip)
     if err != nil {
         return nil, err
@@ -33,9 +29,22 @@ func (r *SqliteHostRepository) FindByID(id string) (*entities.Host, error) {
     if err != nil {
         return nil, err
     }
-    host.IP = ipVO
-    host.Port = portVO
-    return &host, nil
+    return &entities.Host{
+        ID:   id,
+        Name: valueobjects.HostName(name),
+        IP:   ipVO,
+        Port: portVO,
+    }, nil
+}
+
+
+func NewSqliteHostRepository(db *sql.DB) repository.HostRepository {
+    return &SqliteHostRepository{db: db}
+}
+
+func (r *SqliteHostRepository) FindByID(id string) (*entities.Host, error) {
+    row := r.db.QueryRow("SELECT id, name, ip, port FROM hosts WHERE id = ?", id)
+    return scanHostRow(row)
 }
 
 func (r *SqliteHostRepository) Save(host *entities.Host) error {
@@ -44,4 +53,25 @@ func (r *SqliteHostRepository) Save(host *entities.Host) error {
         host.ID, string(host.Name), string(host.IP), int(host.Port),
     )
     return err
+}
+
+func (r *SqliteHostRepository) FindAll() ([]*entities.Host, error) {
+    rows, err := r.db.Query("SELECT id, name, ip, port FROM hosts")
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    var hosts []*entities.Host
+    for rows.Next() {
+        host, err := scanHostRow(rows)
+        if err != nil {
+            return nil, err
+        }
+        hosts = append(hosts, host)
+    }
+    if err := rows.Err(); err != nil {
+        return nil, err
+    }
+    return hosts, nil
 }
