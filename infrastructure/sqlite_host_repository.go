@@ -17,20 +17,31 @@ func NewSqliteHostRepository(db *sql.DB) repository.HostRepository {
 }
 
 func (r *SqliteHostRepository) FindByID(id string) (*entities.Host, error) {
-    row := r.db.QueryRow("SELECT id, name FROM hosts WHERE id = ?", id)
+    row := r.db.QueryRow("SELECT id, name, ip, port FROM hosts WHERE id = ?", id)
     var host entities.Host
-    var name string
-    if err := row.Scan(&host.ID, &name); err != nil {
+    var name, ip string
+    var port int
+    if err := row.Scan(&host.ID, &name, &ip, &port); err != nil {
         return nil, err
     }
     host.Name = valueobjects.HostName(name)
+    ipVO, err := valueobjects.NewIP(ip)
+    if err != nil {
+        return nil, err
+    }
+    portVO, err := valueobjects.NewPort(port)
+    if err != nil {
+        return nil, err
+    }
+    host.IP = ipVO
+    host.Port = portVO
     return &host, nil
 }
 
 func (r *SqliteHostRepository) Save(host *entities.Host) error {
     _, err := r.db.Exec(
-        "INSERT OR REPLACE INTO hosts (id, name) VALUES (?, ?)",
-        host.ID, string(host.Name),
+        "INSERT OR REPLACE INTO hosts (id, name, ip, port) VALUES (?, ?, ?, ?)",
+        host.ID, string(host.Name), string(host.IP), int(host.Port),
     )
     return err
 }
