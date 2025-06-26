@@ -5,11 +5,21 @@ import (
 	"github.com/mklbravo/sshp/application"
 )
 
-func main() {
-	// SSH connection parameters
-	user := "TODO"
-	password := "TODO"
-	host := "TODO"
+import (
+    "log"
+    "github.com/mklbravo/sshp/internal/config"
+    "github.com/mklbravo/sshp/infrastructure"
+)
 
-	application.ConnectToSSHHost(user, password, host)
+func main() {
+    cfg, err := config.Load()
+    if err != nil {
+        log.Fatalf("failed to load config: %v", err)
+    }
+    db, err := infrastructure.InitDB(cfg.DBPath)
+    if err != nil {
+        log.Fatalf("failed to initialize db: %v", err)
+    }
+    // DB initialized. Add further logic here if needed.
 }
+
