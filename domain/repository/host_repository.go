@@ -1,9 +1,9 @@
 package repository
 
-import "github.com/mklbravo/sshp/domain/entities"
+import "github.com/mklbravo/sshp/domain/entity"
 
 type HostRepository interface {
-    FindByID(id string) (*entities.Host, error)
-    FindAll() ([]*entities.Host, error)
-    Save(host *entities.Host) error
+	FindByID(id string) (*entity.Host, error)
+	FindAll() ([]*entity.Host, error)
+	Save(host *entity.Host) error
 }
