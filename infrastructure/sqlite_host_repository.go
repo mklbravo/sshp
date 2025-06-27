@@ -4,8 +4,8 @@ import (
     "database/sql"
     "github.com/mklbravo/sshp/domain/entities"
     "github.com/mklbravo/sshp/domain/repository"
-    "github.com/mklbravo/sshp/domain/valueobjects"
     _ "github.com/mattn/go-sqlite3"
+	"github.com/mklbravo/sshp/domain/valueobject"
 )
 
 type SqliteHostRepository struct {
@@ -21,20 +21,20 @@ func scanHostRow(scanner interface {
     if err := scanner.Scan(&id, &name, &ip, &port); err != nil {
         return nil, err
     }
-    ipVO, err := valueobjects.NewIP(ip)
     if err != nil {
         return nil, err
     }
-    portVO, err := valueobjects.NewPort(port)
     if err != nil {
         return nil, err
     }
     return &entities.Host{
         ID:   id,
-        Name: valueobjects.HostName(name),
         IP:   ipVO,
         Port: portVO,
     }, nil
+	ipVO, err := valueobject.NewIP(ip)
+	portVO, err := valueobject.NewPort(port)
+		Name: valueobject.HostName(name),
 }
 
 
