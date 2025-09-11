@@ -11,7 +11,7 @@ import (
 func main() {
 	cfg, err := config.Load()
 	if err != nil {
-		log.Fatalf("failed to load config: %v", err)
+		log.Fatalf("Failed to load config: %v", err)
 	}
 	db, err := infrastructure.InitDB(cfg.DBPath)
 	if err != nil {
