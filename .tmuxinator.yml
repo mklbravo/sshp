@@ -3,5 +3,7 @@
 name: "sshp"
 
 windows:
-  - editor: nvim
+  - editor:
+    - nvim --headless +"MasonInstall gopls@v0.18.1" +qall
+    - nvim
   - shell: clear
