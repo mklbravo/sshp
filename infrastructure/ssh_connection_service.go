@@ -12,6 +12,14 @@ import (
 	"golang.org/x/term"
 )
 
+type SSHConnectionService struct {
+}
+
+func (this *SSHConnectionService) StartTTY(host *entity.Host) error {
+	fmt.Printf("Connecting to host: %s\n", host.GetFullAddress())
+	return nil
+}
+
 func StartSSHSession(host *entity.Host) (*ssh.Session, error) {
 
 	// SSH client configuration
