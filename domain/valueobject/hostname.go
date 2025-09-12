@@ -1,3 +1,3 @@
-package valueobjects
+package valueobject
 
 type HostName string

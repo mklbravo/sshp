@@ -12,6 +12,10 @@ devenv-start: ## Starts the development environment and logs into main container
 	@docker compose --project-directory .devenv exec main zsh
 
 .PHONY: devenv-stop
-devenv-stop: ## Stops and removes the development environment
+devenv-stop: ## Stops the development environment
+	@docker compose --project-directory .devenv stop
+
+.PHONY: devenv-down ## Stops and removes the development environment containers
 	@docker compose --project-directory .devenv down --remove-orphans
+
 

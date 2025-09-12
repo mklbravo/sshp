@@ -7,16 +7,24 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/mklbravo/sshp/domain"
+	"github.com/mklbravo/sshp/domain/entity"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/term"
 )
 
-func StartSSHSession(host *domain.Host) (*ssh.Session, error) {
+type SSHConnectionService struct {
+}
+
+func (this *SSHConnectionService) StartTTY(host *entity.Host) error {
+	fmt.Printf("Connecting to host: %s\n", host.GetFullAddress())
+	return nil
+}
+
+func StartSSHSession(host *entity.Host) (*ssh.Session, error) {
 
 	// SSH client configuration
 	config := &ssh.ClientConfig{
-		User: host.Username,
+		User: host.Username.GetValue(),
 		Auth: []ssh.AuthMethod{
 			ssh.PublicKeys(getPrivateKeySigner()), // Use private key for authentication
 		},
