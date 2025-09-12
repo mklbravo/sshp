@@ -7,7 +7,7 @@ import (
 )
 
 type Host struct {
-	ID       string
+	ID       int
 	Name     valueobject.HostName
 	Username valueobject.Username
 	IP       valueobject.IP
