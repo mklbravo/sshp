@@ -1,4 +1,4 @@
-package infrastructure
+package sqlite
 
 import (
 	"database/sql"
@@ -17,7 +17,8 @@ type SqliteHostRepository struct {
 func scanHostRow(scanner interface {
 	Scan(dest ...interface{}) error
 }) (*entity.Host, error) {
-	var id, name, ip string
+	var name, ip string
+	var id int
 	var port int
 	if err := scanner.Scan(&id, &name, &ip, &port); err != nil {
 		return nil, err
