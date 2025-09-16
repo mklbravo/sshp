@@ -17,7 +17,6 @@ type SqliteHostRepository struct {
 	db *sql.DB
 }
 
-// scanHostRow scans a single row (from QueryRow) into a Host entity.
 func scanHostRow(scanner rowScanner) (*entity.Host, error) {
 	var id, port int
 	var name, username, ip string
@@ -68,6 +67,7 @@ func (r *SqliteHostRepository) FindAll() ([]*entity.Host, error) {
 		}
 		hosts = append(hosts, host)
 	}
+
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
