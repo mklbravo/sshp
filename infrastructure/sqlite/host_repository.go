@@ -39,7 +39,7 @@ func scanHostRow(scanner interface {
 	}, nil
 }
 
-func NewSqliteHostRepository(db *sql.DB) repository.HostRepository {
+func NewHostRepository(db *sql.DB) *SqliteHostRepository {
 	return &SqliteHostRepository{db: db}
 }
 
