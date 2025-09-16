@@ -48,7 +48,7 @@ func NewHostRepository(db *sql.DB) *SqliteHostRepository {
 }
 
 func (r *SqliteHostRepository) FindByID(id string) (*entity.Host, error) {
-	row := r.db.QueryRow("SELECT id, name, ip, port FROM hosts WHERE id = ?", id)
+	row := r.db.QueryRow("SELECT id, name, username, ip, port FROM hosts WHERE id = ?", id)
 	return scanHostRow(row)
 }
 
@@ -61,7 +61,7 @@ func (r *SqliteHostRepository) Save(host *entity.Host) error {
 }
 
 func (r *SqliteHostRepository) FindAll() ([]*entity.Host, error) {
-	rows, err := r.db.Query("SELECT id, name, ip, port FROM hosts")
+	rows, err := r.db.Query("SELECT id, name, username, ip, port FROM hosts")
 	if err != nil {
 		return nil, err
 	}
