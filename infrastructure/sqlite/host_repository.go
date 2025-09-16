@@ -5,8 +5,6 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/mklbravo/sshp/domain/entity"
-	"github.com/mklbravo/sshp/domain/repository"
-	"github.com/mklbravo/sshp/domain/valueobject"
 )
 
 // This defines an interface for use in the scanHostRow function
@@ -20,27 +18,22 @@ type SqliteHostRepository struct {
 }
 
 // scanHostRow scans a single row (from QueryRow) into a Host entity.
-	var name, ip string
-	var id int
-	var port int
-	if err := scanner.Scan(&id, &name, &ip, &port); err != nil {
-		return nil, err
-	}
-	ipVO, err := valueobject.NewIP(ip)
 func scanHostRow(scanner rowScanner) (*entity.Host, error) {
+	var id, port int
+	var name, username, ip string
+
+	err := scanner.Scan(&id, &name, &username, &ip, &port)
 	if err != nil {
 		return nil, err
 	}
-	portVO, err := valueobject.NewPort(port)
+
+	host, err := entity.NewHost(id, name, username, ip, port)
+
 	if err != nil {
 		return nil, err
 	}
-	return &entity.Host{
-		ID:   id,
-		Name: valueobject.HostName(name),
-		IP:   ipVO,
-		Port: portVO,
-	}, nil
+
+	return host, nil
 }
 
 func NewHostRepository(db *sql.DB) *SqliteHostRepository {
