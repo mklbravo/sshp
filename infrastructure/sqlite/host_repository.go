@@ -9,14 +9,17 @@ import (
 	"github.com/mklbravo/sshp/domain/valueobject"
 )
 
+// This defines an interface for use in the scanHostRow function
+// This allows us to use both sql.Row and sql.Rows as they both implement the Scan method
+type rowScanner interface {
+	Scan(dest ...any) error
+}
+
 type SqliteHostRepository struct {
 	db *sql.DB
 }
 
 // scanHostRow scans a single row (from QueryRow) into a Host entity.
-func scanHostRow(scanner interface {
-	Scan(dest ...interface{}) error
-}) (*entity.Host, error) {
 	var name, ip string
 	var id int
 	var port int
@@ -24,6 +27,7 @@ func scanHostRow(scanner interface {
 		return nil, err
 	}
 	ipVO, err := valueobject.NewIP(ip)
+func scanHostRow(scanner rowScanner) (*entity.Host, error) {
 	if err != nil {
 		return nil, err
 	}
