@@ -1,12 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"os"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/mklbravo/sshp/application"
 	"github.com/mklbravo/sshp/infrastructure/sqlite"
 	"github.com/mklbravo/sshp/internal/config"
+	"github.com/mklbravo/sshp/tui"
 )
 
 func main() {
@@ -21,15 +23,15 @@ func main() {
 		log.Fatalf("Failed to initialize db: %v", err)
 	}
 
-	fmt.Printf("Using database at: %s\n", cfg.DBPath)
 	hostListUC := application.NewHostListUseCase(sqlite.NewHostRepository(db))
 
-	hosts, err := hostListUC.Execute()
-	if err != nil {
-		log.Fatalf("Failed to list hosts: %v", err)
+	hostListView := tui.NewHostListView(hostListUC)
+
+	p := tea.NewProgram(hostListView)
+
+	if _, err := p.Run(); err != nil {
+		log.Fatalf("Error running program: %v", err)
+		os.Exit(1)
 	}
-	fmt.Println("Listing all hosts:")
-	for _, host := range hosts {
-		fmt.Printf("Host: %s, IP: %s, Port: %d\n", host.Name, host.IP, host.Port)
-	}
+
 }
