@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/charmbracelet/bubbles/textinput"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/mklbravo/sshp/application"
 	"github.com/mklbravo/sshp/domain/entity"
 
@@ -19,8 +20,15 @@ type model struct {
 func NewHostListView(hostListUseCase *application.HostListUseCase) model {
 	hosts, _ := hostListUseCase.Execute()
 	// TODO: handle error
+
 	// Initialize text input
 	textInput := textinput.New()
+	textInput.Focus()
+	textInput.Placeholder = "Type to filter hosts..."
+	textInput.Prompt = "  "
+	textInput.PromptStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#74c7ec"))
+	textInput.Width = 50
+
 	return model{
 		hosts:     hosts,
 		selected:  nil,
