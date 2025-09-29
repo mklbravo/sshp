@@ -53,7 +53,7 @@ func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, keyMap.Down):
-			this.SelectNext()
+			this.selectNext()
 
 		case key.Matches(msg, keyMap.Submit):
 			this.isSubmitted = true
@@ -63,7 +63,7 @@ func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return this, tea.Quit
 
 		case key.Matches(msg, keyMap.Up):
-			this.SelectPrevious()
+			this.selectPrevious()
 		}
 	}
 
@@ -107,12 +107,12 @@ func (this *Model) GetSelectedHost() *entity.Host {
 	return this.hosts[this.selectedIndex]
 }
 
-func (this *Model) SelectNext() {
+func (this *Model) selectNext() {
 	if len(this.hosts) > 0 {
 		this.selectedIndex = (this.selectedIndex + 1) % len(this.hosts)
 	}
 }
-func (this *Model) SelectPrevious() {
+func (this *Model) selectPrevious() {
 	if len(this.hosts) > 0 {
 		this.selectedIndex = (this.selectedIndex - 1 + len(this.hosts)) % len(this.hosts)
 	}
