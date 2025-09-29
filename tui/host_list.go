@@ -14,6 +14,7 @@ import (
 
 type Model struct {
 	hosts         []*entity.Host
+	isSubmitted   bool
 	selectedIndex int
 	textInput     textinput.Model
 }
@@ -32,6 +33,7 @@ func NewHostListView(hostListUseCase *application.HostListUseCase) Model {
 
 	return Model{
 		hosts:         hosts,
+		isSubmitted:   false,
 		selectedIndex: 0,
 		textInput:     textInput,
 	}
@@ -54,6 +56,9 @@ func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			this.SelectNext()
 		case key.Matches(msg, keyMap.Up):
 			this.SelectPrevious()
+		case key.Matches(msg, keyMap.Submit):
+			this.isSubmitted = true
+			return this, tea.Quit
 		case key.Matches(msg, keyMap.Quit):
 			return this, tea.Quit
 		}
