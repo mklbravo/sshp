@@ -54,13 +54,16 @@ func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch {
 		case key.Matches(msg, keyMap.Down):
 			this.SelectNext()
-		case key.Matches(msg, keyMap.Up):
-			this.SelectPrevious()
+
 		case key.Matches(msg, keyMap.Submit):
 			this.isSubmitted = true
 			return this, tea.Quit
+
 		case key.Matches(msg, keyMap.Quit):
 			return this, tea.Quit
+
+		case key.Matches(msg, keyMap.Up):
+			this.SelectPrevious()
 		}
 	}
 
