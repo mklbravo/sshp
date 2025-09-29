@@ -12,13 +12,13 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type model struct {
+type Model struct {
 	hosts         []*entity.Host
 	selectedIndex int
 	textInput     textinput.Model
 }
 
-func NewHostListView(hostListUseCase *application.HostListUseCase) model {
+func NewHostListView(hostListUseCase *application.HostListUseCase) Model {
 	hosts, _ := hostListUseCase.Execute()
 	// TODO: handle error
 
@@ -30,18 +30,18 @@ func NewHostListView(hostListUseCase *application.HostListUseCase) model {
 	textInput.PromptStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#74c7ec"))
 	textInput.Width = 50
 
-	return model{
+	return Model{
 		hosts:         hosts,
 		selectedIndex: 0,
 		textInput:     textInput,
 	}
 }
 
-func (this model) Init() tea.Cmd {
+func (this Model) Init() tea.Cmd {
 	return textinput.Blink
 }
 
-func (this model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var inputCmd tea.Cmd
 
 	this.textInput, inputCmd = this.textInput.Update(msg)
@@ -62,7 +62,7 @@ func (this model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return this, inputCmd
 }
 
-func (this model) View() string {
+func (this Model) View() string {
 	if len(this.hosts) == 0 {
 		return "No hosts available.\n"
 	}
@@ -91,12 +91,12 @@ func (this model) View() string {
 	return result
 }
 
-func (this *model) SelectNext() {
+func (this *Model) SelectNext() {
 	if len(this.hosts) > 0 {
 		this.selectedIndex = (this.selectedIndex + 1) % len(this.hosts)
 	}
 }
-func (this *model) SelectPrevious() {
+func (this *Model) SelectPrevious() {
 	if len(this.hosts) > 0 {
 		this.selectedIndex = (this.selectedIndex - 1 + len(this.hosts)) % len(this.hosts)
 	}
