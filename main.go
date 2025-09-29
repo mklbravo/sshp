@@ -29,9 +29,20 @@ func main() {
 
 	p := tea.NewProgram(hostListView)
 
-	if _, err := p.Run(); err != nil {
+	teaModel, err := p.Run()
+
+	if err != nil {
 		log.Fatalf("Error running program: %v", err)
 		os.Exit(1)
+	}
+
+	model := teaModel.(tui.Model)
+
+	selectedHost := model.GetSelectedHost()
+	if selectedHost != nil {
+		log.Printf("Will connect to... %s", selectedHost.Name)
+	} else {
+		log.Printf("No host selected")
 	}
 
 }
