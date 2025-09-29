@@ -3,9 +3,10 @@ package tui
 import "github.com/charmbracelet/bubbles/key"
 
 type keyMapStruct struct {
-	Down key.Binding
-	Quit key.Binding
-	Up   key.Binding
+	Down   key.Binding
+	Quit   key.Binding
+	Submit key.Binding
+	Up     key.Binding
 }
 
 var keyMap = keyMapStruct{
@@ -14,6 +15,9 @@ var keyMap = keyMapStruct{
 	),
 	Quit: key.NewBinding(
 		key.WithKeys("ctrl+c", "esc"),
+	),
+	Submit: key.NewBinding(
+		key.WithKeys("enter"),
 	),
 	Up: key.NewBinding(
 		key.WithKeys("up"),
