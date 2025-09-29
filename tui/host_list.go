@@ -62,12 +62,26 @@ func (this model) View() string {
 		return "No hosts available.\n"
 	}
 
+	selectedIndicatorStyle := lipgloss.NewStyle().
+		Foreground(
+			lipgloss.Color("#cba6f7"),
+		)
+
+	// Render the text input
 	result := this.textInput.View() + "\n\n"
-	result += "Available Hosts:\n"
-	for _, host := range this.hosts {
-		result += fmt.Sprintf("%d. %s (%s@%s:%d)\n", host.ID, host.Name, host.Username, host.IP, host.Port)
+
+	// Render the list of hosts
+	for i, host := range this.hosts {
+
+		if i == 1 {
+			result += selectedIndicatorStyle.Render("󰁕 ")
+		} else {
+			result += "  "
+		}
+
+		result += fmt.Sprintf("%s (%s@%s:%d)\n", host.Name, host.Username, host.IP, host.Port)
 	}
 
-	result += "\nPress Esc or Ctrl+C to exit.\n"
+	result += lipgloss.NewStyle().Foreground(lipgloss.Color("#585b70")).Render("\nPress Esc or Ctrl+C to exit.\n")
 	return result
 }
