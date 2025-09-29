@@ -12,9 +12,9 @@ import (
 )
 
 type model struct {
-	textInput textinput.Model
 	hosts     []*entity.Host
 	selected  *entity.Host
+	textInput textinput.Model
 }
 
 func NewHostListView(hostListUseCase *application.HostListUseCase) model {
