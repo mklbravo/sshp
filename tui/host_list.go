@@ -99,6 +99,14 @@ func (this Model) View() string {
 	return result
 }
 
+func (this *Model) GetSelectedHost() *entity.Host {
+	if !this.isSubmitted {
+		return nil
+	}
+
+	return this.hosts[this.selectedIndex]
+}
+
 func (this *Model) SelectNext() {
 	if len(this.hosts) > 0 {
 		this.selectedIndex = (this.selectedIndex + 1) % len(this.hosts)
