@@ -13,9 +13,9 @@ import (
 )
 
 type model struct {
-	hosts     []*entity.Host
-	selected  *entity.Host
-	textInput textinput.Model
+	hosts         []*entity.Host
+	selectedIndex int
+	textInput     textinput.Model
 }
 
 func NewHostListView(hostListUseCase *application.HostListUseCase) model {
@@ -31,9 +31,9 @@ func NewHostListView(hostListUseCase *application.HostListUseCase) model {
 	textInput.Width = 50
 
 	return model{
-		hosts:     hosts,
-		selected:  nil,
-		textInput: textInput,
+		hosts:         hosts,
+		selectedIndex: 0,
+		textInput:     textInput,
 	}
 }
 
@@ -50,9 +50,12 @@ func (this model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch {
+		case key.Matches(msg, keyMap.Down):
+			this.SelectNext()
+		case key.Matches(msg, keyMap.Up):
+			this.SelectPrevious()
 		case key.Matches(msg, keyMap.Quit):
 			return this, tea.Quit
-
 		}
 	}
 
@@ -73,9 +76,9 @@ func (this model) View() string {
 	result := this.textInput.View() + "\n\n"
 
 	// Render the list of hosts
-	for i, host := range this.hosts {
+	for index, host := range this.hosts {
 
-		if i == 1 {
+		if index == this.selectedIndex {
 			result += selectedIndicatorStyle.Render("󰁕 ")
 		} else {
 			result += "  "
@@ -86,4 +89,15 @@ func (this model) View() string {
 
 	result += lipgloss.NewStyle().Foreground(lipgloss.Color("#585b70")).Render("\nPress Esc or Ctrl+C to exit.\n")
 	return result
+}
+
+func (this *model) SelectNext() {
+	if len(this.hosts) > 0 {
+		this.selectedIndex = (this.selectedIndex + 1) % len(this.hosts)
+	}
+}
+func (this *model) SelectPrevious() {
+	if len(this.hosts) > 0 {
+		this.selectedIndex = (this.selectedIndex - 1 + len(this.hosts)) % len(this.hosts)
+	}
 }
