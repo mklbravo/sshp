@@ -4,6 +4,6 @@ name: "sshp"
 
 windows:
   - editor:
-    - nvim --headless +"MasonInstall gopls@v0.18.1" +qall
+    - nvim --headless +"MasonInstall gopls@v0.18.1" +"MasonInstall goimports@v0.36.0" +qall
     - nvim
   - shell: clear
