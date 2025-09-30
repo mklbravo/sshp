@@ -39,10 +39,14 @@ func main() {
 	model := teaModel.(tui.Model)
 
 	selectedHost := model.GetSelectedHost()
-	if selectedHost != nil {
-		log.Printf("Will connect to... %s", selectedHost.Name)
-	} else {
+	if selectedHost == nil {
 		log.Printf("No host selected")
+		os.Exit(0)
 	}
 
+	err = application.ConnectToSSHHost(selectedHost)
+	if err != nil {
+		log.Fatalf("Failed to connect to SSH host: %v", err)
+		os.Exit(1)
+	}
 }
