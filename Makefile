@@ -27,7 +27,8 @@ devenv-start: ## Starts the development environment and logs into main container
 devenv-stop: ## Stops the development environment
 	@docker compose --project-directory .devenv stop
 
-.PHONY: devenv-down ## Stops and removes the development environment containers
+.PHONY: devenv-down
+devenv-down: ## Stops and removes the development environment containers
 	@docker compose --project-directory .devenv down --remove-orphans
 
 .PHONY: install
@@ -38,5 +39,4 @@ install: ## Installs the Go dependencies
 		env GOOS=$(OS) GOARCH=$(ARCH) \
 		go build -o sshp main.go
 	@mv sshp ~/.bin/sshpdev
-
 
