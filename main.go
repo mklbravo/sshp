@@ -7,6 +7,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/mklbravo/sshp/application"
 	"github.com/mklbravo/sshp/infrastructure/sqlite"
+	"github.com/mklbravo/sshp/infrastructure/ssh"
 	"github.com/mklbravo/sshp/internal/config"
 	"github.com/mklbravo/sshp/tui"
 )
@@ -39,10 +40,18 @@ func main() {
 	model := teaModel.(tui.Model)
 
 	selectedHost := model.GetSelectedHost()
-	if selectedHost != nil {
-		log.Printf("Will connect to... %s", selectedHost.Name)
-	} else {
+	if selectedHost == nil {
 		log.Printf("No host selected")
+		os.Exit(0)
 	}
 
+	hostConnectionUC := application.NewHostConnectionUseCase(
+		ssh.NewSSHConnectionService(),
+	)
+
+	err = hostConnectionUC.Execute(selectedHost)
+	if err != nil {
+		log.Fatalf("Failed to connect to SSH host: %v", err)
+		os.Exit(1)
+	}
 }

@@ -1,4 +1,4 @@
-package infrastructure
+package ssh
 
 import (
 	"fmt"
@@ -15,8 +15,17 @@ import (
 type SSHConnectionService struct {
 }
 
-func (this *SSHConnectionService) StartTTY(host *entity.Host) error {
-	fmt.Printf("Connecting to host: %s\n", host.GetFullAddress())
+func NewSSHConnectionService() *SSHConnectionService {
+	return &SSHConnectionService{}
+}
+
+func (this *SSHConnectionService) ConnectToHost(host *entity.Host) error {
+	sshSession, err := StartSSHSession(host)
+	if err != nil {
+		return err
+	}
+	defer sshSession.Close()
+	RunSSHShell(sshSession)
 	return nil
 }
 
