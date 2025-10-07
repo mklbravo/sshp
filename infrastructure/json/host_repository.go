@@ -36,7 +36,14 @@ func NewJsonHostRepository(filePath string) (*JsonHostRepository, error) {
 func loadHostsFromFile(filePath string) ([]*JsonHostData, error) {
 	fileData, err := os.ReadFile(filePath)
 	if err != nil {
-		return nil, err
+		file, err := os.Create(filePath)
+		if err != nil {
+			return nil, err
+		}
+		file.Write([]byte("[]"))
+		defer file.Close()
+
+		return []*JsonHostData{}, nil
 	}
 
 	var jsonHosts []*JsonHostData
