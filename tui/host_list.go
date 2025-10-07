@@ -118,7 +118,15 @@ func (this Model) View() string {
 			result += "  "
 		}
 
-		result += fmt.Sprintf("%s (%s@%s:%d)\n", host.Name, host.Username, host.IP, host.Port)
+		result += fmt.Sprintf("%s%s\t%s%s\t%s%s\n",
+			styles.sapphire.Render("󰍹  "),
+			host.Name,
+			styles.teal.Render(" "),
+			host.Username,
+			styles.sky.Render(" "),
+			host.IP,
+		)
+		// result += fmt.Sprintf("󰍹  %s  %s  %s\n", host.Name, host.Username, host.IP)
 	}
 
 	result += lipgloss.NewStyle().Foreground(lipgloss.Color("#585b70")).Render("\nPress Esc or Ctrl+C to exit.\n")
