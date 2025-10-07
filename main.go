@@ -27,9 +27,9 @@ func main() {
 
 	hostListView := tui.NewHostListView(hostListUC)
 
-	p := tea.NewProgram(hostListView)
+	tuiProgram := tea.NewProgram(hostListView)
 
-	teaModel, err := p.Run()
+	teaModel, err := tuiProgram.Run()
 
 	if err != nil {
 		log.Fatalf("Error running program: %v", err)
