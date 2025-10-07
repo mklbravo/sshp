@@ -13,20 +13,12 @@ type JsonHostRepository struct {
 }
 
 func NewJsonHostRepository(filePath string) (*JsonHostRepository, error) {
-	fileData, err := os.ReadFile(filePath)
-	if err != nil {
-		return nil, err
-	}
+	fileHosts, _ := loadHostsFromFile(filePath)
 
-	var hostsData []JsonHostData
-	err = json.Unmarshal(fileData, &hostsData)
-	if err != nil {
-		return nil, err
-	}
 	var allHosts []*entity.Host
 	var indexedHosts = make(map[int]*entity.Host)
 
-	for _, hd := range hostsData {
+	for _, hd := range fileHosts {
 		host, err := entity.NewHost(hd.ID, hd.Name, hd.User, hd.Address, hd.Port)
 		if err != nil {
 			return nil, err
@@ -39,7 +31,21 @@ func NewJsonHostRepository(filePath string) (*JsonHostRepository, error) {
 		allHosts:     allHosts,
 		indexedHosts: indexedHosts,
 	}, nil
+}
 
+func loadHostsFromFile(filePath string) ([]*JsonHostData, error) {
+	fileData, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	var jsonHosts []*JsonHostData
+	err = json.Unmarshal(fileData, &jsonHosts)
+	if err != nil {
+		return nil, err
+	}
+
+	return jsonHosts, nil
 }
 
 func (this *JsonHostRepository) FindByID(id int) (*entity.Host, error) {
