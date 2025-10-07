@@ -42,9 +42,9 @@ func NewJsonHostRepository(filePath string) (*JsonHostRepository, error) {
 
 }
 
-func (this *JsonHostRepository) FindByID(id string) (*entity.Host, error) {
 	// TODO
 	return nil, nil
+func (this *JsonHostRepository) FindByID(id int) (*entity.Host, error) {
 }
 func (this *JsonHostRepository) FindAll() ([]*entity.Host, error) {
 	return this.allHosts, nil
