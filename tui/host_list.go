@@ -13,7 +13,7 @@ import (
 )
 
 type Model struct {
-	hosts         []*entity.Host
+	filteredHosts []*entity.Host
 	isSubmitted   bool
 	selectedIndex int
 	textInput     textinput.Model
@@ -32,7 +32,7 @@ func NewHostListView(hostListUseCase *application.HostListUseCase) Model {
 	textInput.Width = 50
 
 	return Model{
-		hosts:         hosts,
+		filteredHosts: hosts,
 		isSubmitted:   false,
 		selectedIndex: 0,
 		textInput:     textInput,
@@ -71,7 +71,7 @@ func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (this Model) View() string {
-	if len(this.hosts) == 0 {
+	if len(this.filteredHosts) == 0 {
 		return "No hosts available.\n"
 	}
 
@@ -84,7 +84,7 @@ func (this Model) View() string {
 	result := this.textInput.View() + "\n\n"
 
 	// Render the list of hosts
-	for index, host := range this.hosts {
+	for index, host := range this.filteredHosts {
 
 		if index == this.selectedIndex {
 			result += selectedIndicatorStyle.Render("󰁕 ")
@@ -104,16 +104,16 @@ func (this *Model) GetSelectedHost() *entity.Host {
 		return nil
 	}
 
-	return this.hosts[this.selectedIndex]
+	return this.filteredHosts[this.selectedIndex]
 }
 
 func (this *Model) selectNext() {
-	if len(this.hosts) > 0 {
-		this.selectedIndex = (this.selectedIndex + 1) % len(this.hosts)
+	if len(this.filteredHosts) > 0 {
+		this.selectedIndex = (this.selectedIndex + 1) % len(this.filteredHosts)
 	}
 }
 func (this *Model) selectPrevious() {
-	if len(this.hosts) > 0 {
-		this.selectedIndex = (this.selectedIndex - 1 + len(this.hosts)) % len(this.hosts)
+	if len(this.filteredHosts) > 0 {
+		this.selectedIndex = (this.selectedIndex - 1 + len(this.filteredHosts)) % len(this.filteredHosts)
 	}
 }
