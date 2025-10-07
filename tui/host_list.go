@@ -109,16 +109,11 @@ func (this Model) View() string {
 		result += "No hosts...\n"
 	}
 
-	selectedIndicatorStyle := lipgloss.NewStyle().
-		Foreground(
-			lipgloss.Color("#cba6f7"),
-		)
-
 	// Render the list of hosts
 	for index, host := range this.filteredHosts {
 
 		if index == this.selectedIndex {
-			result += selectedIndicatorStyle.Render("󰁕 ")
+			result += styles.mauve.Render("󰁕 ")
 		} else {
 			result += "  "
 		}
