@@ -6,7 +6,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/mklbravo/sshp/application"
-	"github.com/mklbravo/sshp/infrastructure/sqlite"
+	"github.com/mklbravo/sshp/infrastructure/json"
 	"github.com/mklbravo/sshp/infrastructure/ssh"
 	"github.com/mklbravo/sshp/internal/config"
 	"github.com/mklbravo/sshp/tui"
@@ -18,19 +18,19 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	db, err := sqlite.GetDBConnection(cfg.DBPath)
-
+	hostRepository, err := json.NewJsonHostRepository(cfg.DataFilePath)
 	if err != nil {
-		log.Fatalf("Failed to initialize db: %v", err)
+		log.Fatalf("Failed to load hosts: %v", err)
+		os.Exit(1)
 	}
 
-	hostListUC := application.NewHostListUseCase(sqlite.NewHostRepository(db))
+	hostListUC := application.NewHostListUseCase(hostRepository)
 
 	hostListView := tui.NewHostListView(hostListUC)
 
-	p := tea.NewProgram(hostListView)
+	tuiProgram := tea.NewProgram(hostListView)
 
-	teaModel, err := p.Run()
+	teaModel, err := tuiProgram.Run()
 
 	if err != nil {
 		log.Fatalf("Error running program: %v", err)

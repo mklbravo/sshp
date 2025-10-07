@@ -39,7 +39,7 @@ func NewHostRepository(db *sql.DB) *SqliteHostRepository {
 	return &SqliteHostRepository{db: db}
 }
 
-func (r *SqliteHostRepository) FindByID(id string) (*entity.Host, error) {
+func (r *SqliteHostRepository) FindByID(id int) (*entity.Host, error) {
 	row := r.db.QueryRow("SELECT id, name, username, ip, port FROM hosts WHERE id = ?", id)
 	return scanHostRow(row)
 }

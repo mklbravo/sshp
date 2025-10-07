@@ -14,8 +14,8 @@ const APP_MODE_DEV = "DEV"
 const ENV_KEY_MODE = "MODE"
 
 type Config struct {
-	Mode   string
-	DBPath string
+	DataFilePath string
+	Mode         string
 }
 
 func Load() (*Config, error) {
@@ -34,8 +34,8 @@ func Load() (*Config, error) {
 	mode = strings.ToUpper(mode)
 
 	return &Config{
-		Mode:   mode,
-		DBPath: getDBPath(mode, configDir),
+		Mode:         mode,
+		DataFilePath: getDataFilePath(mode, configDir),
 	}, nil
 }
 
@@ -45,18 +45,17 @@ func getConfigDir() (string, error) {
 		return "", err
 	}
 
-	configDir := filepath.Join(home, ".config", "sshp")
+	configDir := filepath.Join(home, ".ssh", "sshp")
 	if err := os.MkdirAll(configDir, 0700); err != nil {
 		return "", err
 	}
 	return configDir, nil
 }
 
-func getDBPath(mode string, configDir string) string {
+func getDataFilePath(mode string, configDir string) string {
 	if mode == APP_MODE_DEV {
-		return ".dev-data.db"
+		return "hosts.dev.json"
 	}
 
-	return filepath.Join(configDir, "data.db")
-
+	return filepath.Join(configDir, "hosts.json")
 }
