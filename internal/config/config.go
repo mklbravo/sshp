@@ -45,7 +45,7 @@ func getConfigDir() (string, error) {
 		return "", err
 	}
 
-	configDir := filepath.Join(home, ".config", "sshp")
+	configDir := filepath.Join(home, ".ssh", "sshp")
 	if err := os.MkdirAll(configDir, 0700); err != nil {
 		return "", err
 	}
@@ -57,5 +57,5 @@ func getDataFilePath(mode string, configDir string) string {
 		return "hosts.dev.json"
 	}
 
-	return filepath.Join(configDir, "sshp.hosts.json")
+	return filepath.Join(configDir, "hosts.json")
 }
