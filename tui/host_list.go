@@ -102,17 +102,17 @@ func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (this Model) View() string {
+	// Render the text input
+	result := this.textInput.View() + "\n\n"
+
 	if len(this.filteredHosts) == 0 {
-		return "No hosts available.\n"
+		result += "No hosts...\n"
 	}
 
 	selectedIndicatorStyle := lipgloss.NewStyle().
 		Foreground(
 			lipgloss.Color("#cba6f7"),
 		)
-
-	// Render the text input
-	result := this.textInput.View() + "\n\n"
 
 	// Render the list of hosts
 	for index, host := range this.filteredHosts {
