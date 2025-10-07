@@ -23,6 +23,7 @@ func main() {
 		log.Fatalf("Failed to load hosts: %v", err)
 		os.Exit(1)
 	}
+
 	hostListUC := application.NewHostListUseCase(hostRepository)
 
 	hostListView := tui.NewHostListView(hostListUC)
