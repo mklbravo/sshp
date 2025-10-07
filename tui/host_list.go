@@ -8,15 +8,38 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/mklbravo/sshp/application"
 	"github.com/mklbravo/sshp/domain/entity"
+	"github.com/sahilm/fuzzy"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+type filterableHostList []*entity.Host
+
+func (this filterableHostList) String(index int) string {
+	return string(this[index].Name)
+}
+func (this filterableHostList) Len() int {
+	return len(this)
+}
+
+func (this filterableHostList) GetFiltered(matches []fuzzy.Match) []*entity.Host {
+	if len(matches) == 0 {
+		return []*entity.Host{}
+	}
+
+	var filteredHosts []*entity.Host
+	for _, match := range matches {
+		filteredHosts = append(filteredHosts, this[match.Index])
+	}
+	return filteredHosts
+}
+
 type Model struct {
-	filteredHosts []*entity.Host
-	isSubmitted   bool
-	selectedIndex int
-	textInput     textinput.Model
+	filteredHosts      []*entity.Host
+	filterableHostList filterableHostList
+	isSubmitted        bool
+	selectedIndex      int
+	textInput          textinput.Model
 }
 
 func NewHostListView(hostListUseCase *application.HostListUseCase) Model {
@@ -32,10 +55,11 @@ func NewHostListView(hostListUseCase *application.HostListUseCase) Model {
 	textInput.Width = 50
 
 	return Model{
-		filteredHosts: hosts,
-		isSubmitted:   false,
-		selectedIndex: 0,
-		textInput:     textInput,
+		filterableHostList: hosts,
+		filteredHosts:      hosts,
+		isSubmitted:        false,
+		selectedIndex:      0,
+		textInput:          textInput,
 	}
 }
 
@@ -64,6 +88,13 @@ func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case key.Matches(msg, keyMap.Up):
 			this.selectPrevious()
+		default:
+			if this.textInput.Value() == "" {
+				this.filteredHosts = this.filterableHostList
+			} else {
+				matches := fuzzy.FindFrom(this.textInput.Value(), this.filterableHostList)
+				this.filteredHosts = this.filterableHostList.GetFiltered(matches)
+			}
 		}
 	}
 
