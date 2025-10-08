@@ -17,8 +17,10 @@ import (
 type filterableHostList []*entity.Host
 
 func (this filterableHostList) String(index int) string {
-	return string(this[index].Name)
+	host := this[index]
+	return fmt.Sprintf("%s %s %s", host.Name, host.Username, host.IP)
 }
+
 func (this filterableHostList) Len() int {
 	return len(this)
 }
