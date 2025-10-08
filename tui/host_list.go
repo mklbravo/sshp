@@ -6,6 +6,7 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/table"
 	"github.com/mklbravo/sshp/application"
 	"github.com/mklbravo/sshp/domain/entity"
 	"github.com/sahilm/fuzzy"
@@ -109,25 +110,27 @@ func (this Model) View() string {
 		result += "No hosts...\n"
 	}
 
-	// Render the list of hosts
+	hostTable := table.New().Border(lipgloss.HiddenBorder())
+
 	for index, host := range this.filteredHosts {
 
+		selectionPrefix := ""
 		if index == this.selectedIndex {
-			result += styles.mauve.Render("󰁕 ")
-		} else {
-			result += "  "
+			selectionPrefix = "󰁕 "
 		}
 
-		result += fmt.Sprintf("%s%s\t%s%s\t%s%s\n",
-			styles.sapphire.Render("󰍹  "),
-			host.Name,
+		hostTable.Row(
+			styles.mauve.Render(selectionPrefix),
+			styles.sapphire.Render("󰍹 "),
+			string(host.Name),
 			styles.teal.Render(" "),
-			host.Username,
+			string(host.Username),
 			styles.sky.Render(" "),
-			host.IP,
+			string(host.IP),
 		)
-		// result += fmt.Sprintf("󰍹  %s  %s  %s\n", host.Name, host.Username, host.IP)
 	}
+
+	result += hostTable.Render()
 
 	result += lipgloss.NewStyle().Foreground(lipgloss.Color("#585b70")).Render("\nPress Esc or Ctrl+C to exit.\n")
 	return result
