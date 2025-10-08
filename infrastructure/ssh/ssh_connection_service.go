@@ -98,8 +98,12 @@ func RunSSHShell(this *ssh.Session) {
 }
 
 func getPrivateKeySigner() ssh.Signer {
-	// TODO: Make this configurable
-	keyPath := fmt.Sprintf("%s/.ssh/id_rsa", os.Getenv("HOME"))
+	homeFolder := os.Getenv("HOME")
+	if homeFolder == "" {
+		log.Fatalf("HOME environment variable is not set")
+	}
+
+	keyPath := fmt.Sprintf("%s/.ssh/id_rsa", homeFolder)
 
 	key, err := os.ReadFile(keyPath)
 	if err != nil {
