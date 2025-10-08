@@ -67,7 +67,7 @@ func NewHostListView(hostListUseCase *application.HostListUseCase) Model {
 }
 
 func (this Model) Init() tea.Cmd {
-	return textinput.Blink
+	return tea.Batch(tea.ClearScreen, textinput.Blink)
 }
 
 func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -84,7 +84,7 @@ func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case key.Matches(msg, keyMap.Submit):
 			this.isSubmitted = true
-			return this, tea.Quit
+			return this, tea.Batch(tea.ClearScreen, tea.Quit)
 
 		case key.Matches(msg, keyMap.Quit):
 			return this, tea.Quit
