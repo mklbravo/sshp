@@ -96,6 +96,8 @@ func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				matches := fuzzy.FindFrom(this.textInput.Value(), this.filterableHostList)
 				this.filteredHosts = this.filterableHostList.GetFiltered(matches)
 			}
+
+			this.selectedIndex = 0
 		}
 	}
 
