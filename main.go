@@ -36,12 +36,10 @@ func main() {
 		log.Fatalf("Error running program: %v", err)
 		os.Exit(1)
 	}
-
 	model := teaModel.(tui.Model)
 
 	selectedHost := model.GetSelectedHost()
 	if selectedHost == nil {
-		log.Printf("No host selected")
 		os.Exit(0)
 	}
 

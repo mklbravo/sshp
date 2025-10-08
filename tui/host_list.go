@@ -6,6 +6,7 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/table"
 	"github.com/mklbravo/sshp/application"
 	"github.com/mklbravo/sshp/domain/entity"
 	"github.com/sahilm/fuzzy"
@@ -16,8 +17,10 @@ import (
 type filterableHostList []*entity.Host
 
 func (this filterableHostList) String(index int) string {
-	return string(this[index].Name)
+	host := this[index]
+	return fmt.Sprintf("%s %s %s", host.Name, host.Username, host.IP)
 }
+
 func (this filterableHostList) Len() int {
 	return len(this)
 }
@@ -64,7 +67,7 @@ func NewHostListView(hostListUseCase *application.HostListUseCase) Model {
 }
 
 func (this Model) Init() tea.Cmd {
-	return textinput.Blink
+	return tea.Batch(tea.ClearScreen, textinput.Blink)
 }
 
 func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -81,7 +84,7 @@ func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case key.Matches(msg, keyMap.Submit):
 			this.isSubmitted = true
-			return this, tea.Quit
+			return this, tea.Batch(tea.ClearScreen, tea.Quit)
 
 		case key.Matches(msg, keyMap.Quit):
 			return this, tea.Quit
@@ -95,6 +98,8 @@ func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				matches := fuzzy.FindFrom(this.textInput.Value(), this.filterableHostList)
 				this.filteredHosts = this.filterableHostList.GetFiltered(matches)
 			}
+
+			this.selectedIndex = 0
 		}
 	}
 
@@ -103,28 +108,33 @@ func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (this Model) View() string {
 	// Render the text input
-	result := this.textInput.View() + "\n\n"
+	result := paddingStyle.smallAll.Render(this.textInput.View())
 
 	if len(this.filteredHosts) == 0 {
-		result += "No hosts...\n"
+		result += paddingStyle.smallAll.Render("No hosts found.\n")
 	}
 
-	selectedIndicatorStyle := lipgloss.NewStyle().
-		Foreground(
-			lipgloss.Color("#cba6f7"),
-		)
+	hostTable := table.New().Border(lipgloss.HiddenBorder())
 
-	// Render the list of hosts
 	for index, host := range this.filteredHosts {
 
+		selectionPrefix := ""
 		if index == this.selectedIndex {
-			result += selectedIndicatorStyle.Render("󰁕 ")
-		} else {
-			result += "  "
+			selectionPrefix = "󰁕 "
 		}
 
-		result += fmt.Sprintf("%s (%s@%s:%d)\n", host.Name, host.Username, host.IP, host.Port)
+		hostTable.Row(
+			colorStyle.mauve.Render(selectionPrefix),
+			colorStyle.sapphire.Render("󰍹 "),
+			string(host.Name),
+			colorStyle.teal.Render(" "),
+			string(host.Username),
+			colorStyle.sky.Render(" "),
+			string(host.IP),
+		)
 	}
+
+	result += hostTable.Render()
 
 	result += lipgloss.NewStyle().Foreground(lipgloss.Color("#585b70")).Render("\nPress Esc or Ctrl+C to exit.\n")
 	return result
