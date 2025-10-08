@@ -108,7 +108,7 @@ func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (this Model) View() string {
 	// Render the text input
-	result := this.textInput.View() + "\n\n"
+	result := paddingStyle.smallAll.Render(this.textInput.View())
 
 	if len(this.filteredHosts) == 0 {
 		result += "No hosts...\n"
