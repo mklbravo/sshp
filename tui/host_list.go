@@ -111,7 +111,7 @@ func (this Model) View() string {
 	result := paddingStyle.smallAll.Render(this.textInput.View())
 
 	if len(this.filteredHosts) == 0 {
-		result += "No hosts...\n"
+		result += paddingStyle.smallAll.Render("No hosts found.\n")
 	}
 
 	hostTable := table.New().Border(lipgloss.HiddenBorder())
