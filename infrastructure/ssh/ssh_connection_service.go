@@ -1,10 +1,10 @@
 package ssh
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 
 	"github.com/mklbravo/sshp/domain/entity"
@@ -98,18 +98,34 @@ func RunSSHShell(this *ssh.Session) {
 }
 
 func getPrivateKeySigner() ssh.Signer {
-	// TODO: Make this configurable
-	keyPath := fmt.Sprintf("%s/.ssh/id_rsa", os.Getenv("HOME"))
+	homeFolder := os.Getenv("HOME")
 
-	key, err := os.ReadFile(keyPath)
-	if err != nil {
-		log.Fatalf("unable to read private key: %v", err)
+	if homeFolder == "" {
+		log.Fatalf("HOME environment variable is not set")
 	}
 
-	signer, err := ssh.ParsePrivateKey(key)
-	if err != nil {
-		log.Fatalf("unable to parse private key: %v", err)
+	privateKeyCandidates := []string{
+		"id_ed25519",
+		"id_rsa",
+		"id_ecdsa",
 	}
 
-	return signer
+	for _, keyFile := range privateKeyCandidates {
+
+		keyPath := filepath.Join(homeFolder, ".ssh", keyFile)
+		key, err := os.ReadFile(keyPath)
+		if err != nil {
+			// Try the next candidate if the file doesn't exist
+			continue
+		}
+		signer, err := ssh.ParsePrivateKey(key)
+		if err != nil {
+			log.Fatalf("Unable to parse private key (%s): %v", keyPath, err)
+		}
+
+		return signer
+	}
+
+	log.Fatalf("No valid private key found in ~/.ssh/")
+	return nil
 }
