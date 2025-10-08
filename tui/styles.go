@@ -15,3 +15,11 @@ var colorStyle = colorStylesStruc{
 	sky:      lipgloss.NewStyle().Foreground(lipgloss.Color("#89dceb")),
 	teal:     lipgloss.NewStyle().Foreground(lipgloss.Color("#94e2d5")),
 }
+
+type paddingStylesStruct struct {
+	smallAll lipgloss.Style
+}
+
+var paddingStyle = paddingStylesStruct{
+	smallAll: lipgloss.NewStyle().Padding(1),
+}
