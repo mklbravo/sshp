@@ -124,12 +124,12 @@ func (this Model) View() string {
 		}
 
 		hostTable.Row(
-			styles.mauve.Render(selectionPrefix),
-			styles.sapphire.Render("󰍹 "),
+			colorStyle.mauve.Render(selectionPrefix),
+			colorStyle.sapphire.Render("󰍹 "),
 			string(host.Name),
-			styles.teal.Render(" "),
+			colorStyle.teal.Render(" "),
 			string(host.Username),
-			styles.sky.Render(" "),
+			colorStyle.sky.Render(" "),
 			string(host.IP),
 		)
 	}
