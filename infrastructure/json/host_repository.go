@@ -33,7 +33,7 @@ func NewJsonHostRepository(filePath string) (*JsonHostRepository, error) {
 	}, nil
 }
 
-func loadHostsFromFile(filePath string) ([]*JsonHostData, error) {
+func loadHostsFromFile(filePath string) ([]*hostData, error) {
 	fileData, err := os.ReadFile(filePath)
 	if err != nil {
 		file, err := os.Create(filePath)
@@ -43,10 +43,10 @@ func loadHostsFromFile(filePath string) ([]*JsonHostData, error) {
 		file.Write([]byte("[]"))
 		defer file.Close()
 
-		return []*JsonHostData{}, nil
+		return []*hostData{}, nil
 	}
 
-	var jsonHosts []*JsonHostData
+	var jsonHosts []*hostData
 	err = json.Unmarshal(fileData, &jsonHosts)
 	if err != nil {
 		return nil, err
@@ -65,12 +65,4 @@ func (this *JsonHostRepository) FindAll() ([]*entity.Host, error) {
 func (this *JsonHostRepository) Save(host *entity.Host) error {
 	// TODO
 	return nil
-}
-
-type JsonHostData struct {
-	ID      int    `json:"id"`
-	Name    string `json:"name"`
-	User    string `json:"user"`
-	Address string `json:"address"`
-	Port    int    `json:"port"`
 }
