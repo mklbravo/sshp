@@ -8,10 +8,10 @@ import (
 
 type Host struct {
 	ID       int
-	Name     valueobject.HostName
-	Username valueobject.Username
 	IP       valueobject.IP
+	Name     valueobject.HostName
 	Port     valueobject.Port
+	Username valueobject.Username
 }
 
 func NewHost(id int, name, username, ip string, port int) (*Host, error) {
@@ -31,10 +31,10 @@ func NewHost(id int, name, username, ip string, port int) (*Host, error) {
 
 	return &Host{
 		ID:       id,
-		Name:     hostName,
-		Username: user,
 		IP:       hostIP,
+		Name:     hostName,
 		Port:     hostPort,
+		Username: user,
 	}, nil
 }
 
