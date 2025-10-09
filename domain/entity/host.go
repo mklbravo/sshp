@@ -14,7 +14,13 @@ type Host struct {
 	Username valueobject.Username
 }
 
-func NewHost(id int, name, username, ip string, port int) (*Host, error) {
+func NewHost(
+	id int,
+	name string,
+	username string,
+	ip string,
+	port int,
+) (*Host, error) {
 	hostName := valueobject.HostName(name)
 
 	user := valueobject.Username(username)
