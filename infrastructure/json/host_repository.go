@@ -18,8 +18,8 @@ func NewJsonHostRepository(filePath string) (*JsonHostRepository, error) {
 	var allHosts []*entity.Host
 	var indexedHosts = make(map[int]*entity.Host)
 
-	for _, hd := range fileHosts {
-		host, err := entity.NewHost(hd.ID, hd.Name, hd.User, hd.Address, hd.Port)
+	for index, hd := range fileHosts {
+		host, err := entity.NewHost(index, hd.Name, hd.User, hd.Address, hd.Port)
 		if err != nil {
 			return nil, err
 		}
