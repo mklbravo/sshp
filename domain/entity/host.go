@@ -27,12 +27,12 @@ func NewHost(
 
 	hostIP, err := valueobject.NewIP(ip)
 	if err != nil {
-		return nil, fmt.Errorf("invalid IP address: %w", err)
+		return nil, fmt.Errorf("Invalid IP address: %w", err)
 	}
 
 	hostPort, err := valueobject.NewPort(port)
 	if err != nil {
-		return nil, fmt.Errorf("invalid port: %w", err)
+		return nil, fmt.Errorf("Invalid port: %w", err)
 	}
 
 	return &Host{
