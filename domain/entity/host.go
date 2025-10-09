@@ -7,6 +7,7 @@ import (
 )
 
 type Host struct {
+	Group    string
 	ID       int
 	IP       valueobject.IP
 	Name     valueobject.HostName
@@ -20,6 +21,7 @@ func NewHost(
 	username string,
 	ip string,
 	port int,
+	group string,
 ) (*Host, error) {
 	hostName := valueobject.HostName(name)
 
@@ -36,6 +38,7 @@ func NewHost(
 	}
 
 	return &Host{
+		Group:    group,
 		ID:       id,
 		IP:       hostIP,
 		Name:     hostName,
