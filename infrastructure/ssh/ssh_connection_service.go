@@ -96,6 +96,8 @@ func RunSSHShell(this *ssh.Session) {
 			this.WindowChange(height, width)
 		}
 	}()
+	// Send initial size
+	this.WindowChange(height, width)
 
 	// Start shell
 	if err := this.Shell(); err != nil {
