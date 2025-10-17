@@ -80,6 +80,13 @@ func RunSSHShell(this *ssh.Session) {
 		log.Fatalf("request for pseudo terminal failed: %s", err)
 	}
 
+	// Set terminal to raw mode
+	oldState, err := term.MakeRaw(fd)
+	if err != nil {
+		log.Fatalf("failed to set terminal to raw mode: %s", err)
+	}
+	defer term.Restore(fd, oldState)
+
 	// Handle terminal resize
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGWINCH)
