@@ -80,6 +80,13 @@ func RunSSHShell(this *ssh.Session) {
 		log.Fatalf("request for pseudo terminal failed: %s", err)
 	}
 
+	// Set terminal to raw mode
+	oldState, err := term.MakeRaw(fd)
+	if err != nil {
+		log.Fatalf("failed to set terminal to raw mode: %s", err)
+	}
+	defer term.Restore(fd, oldState)
+
 	// Handle terminal resize
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGWINCH)
@@ -87,6 +94,19 @@ func RunSSHShell(this *ssh.Session) {
 		for range signals {
 			width, height, _ := term.GetSize(fd)
 			this.WindowChange(height, width)
+		}
+	}()
+	// Send initial size
+	this.WindowChange(height, width)
+
+	// Forward SIGINT (Ctrl+C) to remote process
+	// MakeRaw will output Ctrl+C directly to the remote session,
+	// but in case we need to handle it differently, we set up this forwarding.
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt)
+	go func() {
+		for range interrupt {
+			_ = this.Signal(ssh.SIGINT)
 		}
 	}()
 
