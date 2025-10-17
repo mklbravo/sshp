@@ -99,6 +99,17 @@ func RunSSHShell(this *ssh.Session) {
 	// Send initial size
 	this.WindowChange(height, width)
 
+	// Forward SIGINT (Ctrl+C) to remote process
+	// MakeRaw will output Ctrl+C directly to the remote session,
+	// but in case we need to handle it differently, we set up this forwarding.
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt)
+	go func() {
+		for range interrupt {
+			_ = this.Signal(ssh.SIGINT)
+		}
+	}()
+
 	// Start shell
 	if err := this.Shell(); err != nil {
 		log.Fatalf("failed to start shell: %s", err)
