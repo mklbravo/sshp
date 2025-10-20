@@ -131,6 +131,8 @@ func (this Model) View() string {
 			string(host.Username),
 			colorStyle.sky.Render(" "),
 			string(host.IP),
+			colorStyle.sky.Render(" "),
+			host.GetDetailsString(),
 		)
 	}
 
