@@ -38,5 +38,5 @@ install: ## Installs the Go dependencies
 	@docker compose --project-directory .devenv exec main \
 		env GOOS=$(OS) GOARCH=$(ARCH) \
 		go build -o sshp main.go
-	@mv sshp ~/.bin/sshpdev
+	@mv sshp ~/.bin/sshp
 
