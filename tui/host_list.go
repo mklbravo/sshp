@@ -123,6 +123,15 @@ func (this Model) View() string {
 			selectionPrefix = "󰁕 "
 		}
 
+		detailsColumn := ""
+		if host.HasDetails() {
+			detailsColumn = fmt.Sprintf(
+				"%s %s",
+				colorStyle.sky.Render(""),
+				host.GetDetailsString(),
+			)
+		}
+
 		hostTable.Row(
 			colorStyle.mauve.Render(selectionPrefix),
 			colorStyle.sapphire.Render("󰍹 "),
@@ -133,9 +142,8 @@ func (this Model) View() string {
 			" ", // Spacer column
 			colorStyle.sky.Render(""),
 			string(host.IP),
-			colorStyle.sky.Render(" "),
-			host.GetDetailsString(),
 			" ", // Spacer column
+			detailsColumn,
 		)
 	}
 
