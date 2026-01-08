@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -118,19 +119,47 @@ func (this Model) View() string {
 
 	for index, host := range this.filteredHosts {
 
-		selectionPrefix := ""
+		selectionColumnContent := ""
 		if index == this.selectedIndex {
-			selectionPrefix = "󰁕 "
+			selectionColumnContent = colorStyle.mauve.Render("󰁕 ")
+		}
+
+		nameColumnContent := fmt.Sprintf(
+			"%s  %s", // Two spaces for padding
+			colorStyle.sapphire.Render("󰍹"),
+			host.Name,
+		)
+
+		usernameColumnContent := fmt.Sprintf(
+			"%s %s",
+			colorStyle.teal.Render(""),
+			string(host.Username),
+		)
+
+		ipColumnContent := fmt.Sprintf(
+			"%s %s",
+			colorStyle.sky.Render(""),
+			string(host.IP),
+		)
+
+		detailsColumnContent := ""
+		if host.HasDetails() {
+			detailsColumnContent = fmt.Sprintf(
+				"%s %s",
+				colorStyle.sky.Render(""),
+				this.buildHostDetailsString(host),
+			)
 		}
 
 		hostTable.Row(
-			colorStyle.mauve.Render(selectionPrefix),
-			colorStyle.sapphire.Render("󰍹 "),
-			string(host.Name),
-			colorStyle.teal.Render(" "),
-			string(host.Username),
-			colorStyle.sky.Render(" "),
-			string(host.IP),
+			selectionColumnContent,
+			nameColumnContent,
+			" ", // Spacer column
+			usernameColumnContent,
+			" ", // Spacer column
+			ipColumnContent,
+			" ", // Spacer column
+			detailsColumnContent,
 		)
 	}
 
@@ -138,6 +167,23 @@ func (this Model) View() string {
 
 	result += lipgloss.NewStyle().Foreground(lipgloss.Color("#585b70")).Render("\nPress Esc or Ctrl+C to exit.\n")
 	return result
+}
+
+func (this *Model) buildHostDetailsString(host *entity.Host) string {
+
+	var builder strings.Builder
+
+	detailCount := len(host.Details)
+
+	for index, content := range host.Details {
+		builder.WriteString(content)
+
+		if index != detailCount-1 {
+			builder.WriteString(" | ")
+		}
+
+	}
+	return builder.String()
 }
 
 func (this *Model) GetSelectedHost() *entity.Host {

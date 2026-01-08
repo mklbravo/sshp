@@ -30,6 +30,7 @@ func NewJsonHostRepository(filePath string) (*JsonHostRepository, error) {
 			hd.Address,
 			hd.Port,
 			hd.Group,
+			hd.Details,
 		)
 
 		if err != nil {

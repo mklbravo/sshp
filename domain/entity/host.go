@@ -13,6 +13,7 @@ type Host struct {
 	Name     valueobject.HostName
 	Port     valueobject.Port
 	Username valueobject.Username
+	Details  []string
 }
 
 func NewHost(
@@ -22,6 +23,7 @@ func NewHost(
 	ip string,
 	port int,
 	group string,
+	details []string,
 ) (*Host, error) {
 	hostName := valueobject.HostName(name)
 
@@ -44,6 +46,7 @@ func NewHost(
 		Name:     hostName,
 		Port:     hostPort,
 		Username: user,
+		Details:  details,
 	}, nil
 }
 
@@ -52,4 +55,8 @@ func (this *Host) GetFullAddress() string {
 		string(this.IP),
 		int(this.Port),
 	)
+}
+
+func (this *Host) HasDetails() bool {
+	return len(this.Details) > 0
 }
