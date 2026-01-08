@@ -118,14 +118,32 @@ func (this Model) View() string {
 
 	for index, host := range this.filteredHosts {
 
-		selectionPrefix := ""
+		selectionColumnContent := ""
 		if index == this.selectedIndex {
-			selectionPrefix = "󰁕 "
+			selectionColumnContent = colorStyle.mauve.Render("󰁕 ")
 		}
 
-		detailsColumn := ""
+		nameColumnContent := fmt.Sprintf(
+			"%s  %s", // Two spaces for padding
+			colorStyle.sapphire.Render("󰍹"),
+			host.Name,
+		)
+
+		usernameColumnContent := fmt.Sprintf(
+			"%s %s",
+			colorStyle.teal.Render(""),
+			string(host.Username),
+		)
+
+		ipColumnContent := fmt.Sprintf(
+			"%s %s",
+			colorStyle.sky.Render(""),
+			string(host.IP),
+		)
+
+		detailsColumnContent := ""
 		if host.HasDetails() {
-			detailsColumn = fmt.Sprintf(
+			detailsColumnContent = fmt.Sprintf(
 				"%s %s",
 				colorStyle.sky.Render(""),
 				host.GetDetailsString(),
@@ -133,17 +151,14 @@ func (this Model) View() string {
 		}
 
 		hostTable.Row(
-			colorStyle.mauve.Render(selectionPrefix),
-			colorStyle.sapphire.Render("󰍹 "),
-			string(host.Name),
+			selectionColumnContent,
+			nameColumnContent,
 			" ", // Spacer column
-			colorStyle.teal.Render(""),
-			string(host.Username),
+			usernameColumnContent,
 			" ", // Spacer column
-			colorStyle.sky.Render(""),
-			string(host.IP),
+			ipColumnContent,
 			" ", // Spacer column
-			detailsColumn,
+			detailsColumnContent,
 		)
 	}
 
