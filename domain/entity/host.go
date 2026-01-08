@@ -63,8 +63,15 @@ func (this *Host) HasDetails() bool {
 
 func (this *Host) GetDetailsString() string {
 	details := ""
-	for _, detail := range this.Details {
-		details += detail + " "
+	detailCount := len(this.Details)
+
+	for index, content := range this.Details {
+		if index == detailCount-1 {
+			details += content
+
+		} else {
+			details += fmt.Sprintf("%s | ", content)
+		}
 	}
 	return details
 }
