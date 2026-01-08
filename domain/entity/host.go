@@ -57,6 +57,10 @@ func (this *Host) GetFullAddress() string {
 	)
 }
 
+func (this *Host) HasDetails() bool {
+	return len(this.Details) > 0
+}
+
 func (this *Host) GetDetailsString() string {
 	details := ""
 	for _, detail := range this.Details {
