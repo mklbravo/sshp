@@ -127,12 +127,15 @@ func (this Model) View() string {
 			colorStyle.mauve.Render(selectionPrefix),
 			colorStyle.sapphire.Render("󰍹 "),
 			string(host.Name),
-			colorStyle.teal.Render(" "),
+			" ", // Spacer column
+			colorStyle.teal.Render(""),
 			string(host.Username),
-			colorStyle.sky.Render(" "),
+			" ", // Spacer column
+			colorStyle.sky.Render(""),
 			string(host.IP),
 			colorStyle.sky.Render(" "),
 			host.GetDetailsString(),
+			" ", // Spacer column
 		)
 	}
 
