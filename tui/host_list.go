@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -146,7 +147,7 @@ func (this Model) View() string {
 			detailsColumnContent = fmt.Sprintf(
 				"%s %s",
 				colorStyle.sky.Render(""),
-				host.GetDetailsString(),
+				this.buildHostDetailsString(host),
 			)
 		}
 
@@ -166,6 +167,23 @@ func (this Model) View() string {
 
 	result += lipgloss.NewStyle().Foreground(lipgloss.Color("#585b70")).Render("\nPress Esc or Ctrl+C to exit.\n")
 	return result
+}
+
+func (this *Model) buildHostDetailsString(host *entity.Host) string {
+
+	var builder strings.Builder
+
+	detailCount := len(host.Details)
+
+	for index, content := range host.Details {
+		builder.WriteString(content)
+
+		if index != detailCount-1 {
+			builder.WriteString(" | ")
+		}
+
+	}
+	return builder.String()
 }
 
 func (this *Model) GetSelectedHost() *entity.Host {

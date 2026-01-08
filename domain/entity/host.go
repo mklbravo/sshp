@@ -60,18 +60,3 @@ func (this *Host) GetFullAddress() string {
 func (this *Host) HasDetails() bool {
 	return len(this.Details) > 0
 }
-
-func (this *Host) GetDetailsString() string {
-	details := ""
-	detailCount := len(this.Details)
-
-	for index, content := range this.Details {
-		if index == detailCount-1 {
-			details += content
-
-		} else {
-			details += fmt.Sprintf("%s | ", content)
-		}
-	}
-	return details
-}
