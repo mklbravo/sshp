@@ -16,7 +16,7 @@ help: ## Displays this list of targets with descriptions
 
 .PHONY: devenv-build
 devenv-build: ## Build the development environment
-	@docker compose --projec-directory .devenv build --pull
+	@docker compose --project-directory .devenv build --pull
 
 .PHONY: devenv-start
 devenv-start: ## Starts the development environment and logs into main container
@@ -39,4 +39,3 @@ install: ## Installs the Go dependencies
 		env GOOS=$(OS) GOARCH=$(ARCH) \
 		go build -o sshp main.go
 	@mv sshp ~/.bin/sshp
-
