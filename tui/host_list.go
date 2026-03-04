@@ -16,7 +16,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-var highlightStyle = colorStyle.moccasin.Bold(true)
+var highlightStyle = colorStyle.yellow.Bold(true)
 
 type hostMatch struct {
 	host            *entity.Host
