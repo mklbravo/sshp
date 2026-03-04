@@ -7,6 +7,7 @@ type colorStylesStruc struct {
 	sapphire lipgloss.Style
 	sky      lipgloss.Style
 	teal     lipgloss.Style
+	moccasin lipgloss.Style
 }
 
 var colorStyle = colorStylesStruc{
@@ -14,6 +15,7 @@ var colorStyle = colorStylesStruc{
 	sapphire: lipgloss.NewStyle().Foreground(lipgloss.Color("#74c7ec")),
 	sky:      lipgloss.NewStyle().Foreground(lipgloss.Color("#89dceb")),
 	teal:     lipgloss.NewStyle().Foreground(lipgloss.Color("#94e2d5")),
+	moccasin: lipgloss.NewStyle().Foreground(lipgloss.Color("#f9e2af")),
 }
 
 type paddingStylesStruct struct {

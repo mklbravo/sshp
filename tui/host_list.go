@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -15,35 +16,23 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type filterableHostList []*entity.Host
+var highlightStyle = colorStyle.moccasin.Bold(true)
 
-func (this filterableHostList) String(index int) string {
-	host := this[index]
-	return fmt.Sprintf("%s %s %s", host.Name, host.Username, host.IP)
-}
-
-func (this filterableHostList) Len() int {
-	return len(this)
-}
-
-func (this filterableHostList) GetFiltered(matches []fuzzy.Match) []*entity.Host {
-	if len(matches) == 0 {
-		return []*entity.Host{}
-	}
-
-	var filteredHosts []*entity.Host
-	for _, match := range matches {
-		filteredHosts = append(filteredHosts, this[match.Index])
-	}
-	return filteredHosts
+type hostMatch struct {
+	host            *entity.Host
+	score           int
+	nameIndexes     []int
+	usernameIndexes []int
+	ipIndexes       []int
+	detailIndexes   [][]int // one entry per detail item
 }
 
 type Model struct {
-	filteredHosts      []*entity.Host
-	filterableHostList filterableHostList
-	isSubmitted        bool
-	selectedIndex      int
-	textInput          textinput.Model
+	allHosts      []*entity.Host
+	matches       []hostMatch
+	isSubmitted   bool
+	selectedIndex int
+	textInput     textinput.Model
 }
 
 func NewHostListView(hostListUseCase *application.HostListUseCase) Model {
@@ -55,15 +44,15 @@ func NewHostListView(hostListUseCase *application.HostListUseCase) Model {
 	textInput.Focus()
 	textInput.Placeholder = "Type to filter hosts..."
 	textInput.Prompt = "  "
-	textInput.PromptStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#74c7ec"))
+	textInput.PromptStyle = colorStyle.sapphire
 	textInput.Width = 50
 
 	return Model{
-		filterableHostList: hosts,
-		filteredHosts:      hosts,
-		isSubmitted:        false,
-		selectedIndex:      0,
-		textInput:          textInput,
+		allHosts:      hosts,
+		matches:       allHostsAsMatches(hosts),
+		isSubmitted:   false,
+		selectedIndex: 0,
+		textInput:     textInput,
 	}
 }
 
@@ -92,12 +81,12 @@ func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case key.Matches(msg, keyMap.Up):
 			this.selectPrevious()
+
 		default:
 			if this.textInput.Value() == "" {
-				this.filteredHosts = this.filterableHostList
+				this.matches = allHostsAsMatches(this.allHosts)
 			} else {
-				matches := fuzzy.FindFrom(this.textInput.Value(), this.filterableHostList)
-				this.filteredHosts = this.filterableHostList.GetFiltered(matches)
+				this.matches = searchHosts(this.textInput.Value(), this.allHosts)
 			}
 
 			this.selectedIndex = 0
@@ -111,13 +100,14 @@ func (this Model) View() string {
 	// Render the text input
 	result := paddingStyle.smallAll.Render(this.textInput.View())
 
-	if len(this.filteredHosts) == 0 {
+	if len(this.matches) == 0 {
 		result += paddingStyle.smallAll.Render("No hosts found.\n")
 	}
 
 	hostTable := table.New().Border(lipgloss.HiddenBorder())
 
-	for index, host := range this.filteredHosts {
+	for index, m := range this.matches {
+		host := m.host
 
 		selectionColumnContent := ""
 		if index == this.selectedIndex {
@@ -127,19 +117,19 @@ func (this Model) View() string {
 		nameColumnContent := fmt.Sprintf(
 			"%s  %s", // Two spaces for padding
 			colorStyle.sapphire.Render("󰍹"),
-			host.Name,
+			renderWithHighlights(string(host.Name), m.nameIndexes),
 		)
 
 		usernameColumnContent := fmt.Sprintf(
 			"%s %s",
 			colorStyle.teal.Render(""),
-			string(host.Username),
+			renderWithHighlights(string(host.Username), m.usernameIndexes),
 		)
 
 		ipColumnContent := fmt.Sprintf(
 			"%s %s",
 			colorStyle.sky.Render(""),
-			string(host.IP),
+			renderWithHighlights(string(host.IP), m.ipIndexes),
 		)
 
 		detailsColumnContent := ""
@@ -147,7 +137,7 @@ func (this Model) View() string {
 			detailsColumnContent = fmt.Sprintf(
 				"%s %s",
 				colorStyle.sky.Render(""),
-				this.buildHostDetailsString(host),
+				buildDetailsString(host.Details, m.detailIndexes),
 			)
 		}
 
@@ -169,38 +159,137 @@ func (this Model) View() string {
 	return result
 }
 
-func (this *Model) buildHostDetailsString(host *entity.Host) string {
-
-	var builder strings.Builder
-
-	detailCount := len(host.Details)
-
-	for index, content := range host.Details {
-		builder.WriteString(content)
-
-		if index != detailCount-1 {
-			builder.WriteString(" | ")
-		}
-
-	}
-	return builder.String()
-}
-
 func (this *Model) GetSelectedHost() *entity.Host {
 	if !this.isSubmitted {
 		return nil
 	}
 
-	return this.filteredHosts[this.selectedIndex]
+	return this.matches[this.selectedIndex].host
 }
 
 func (this *Model) selectNext() {
-	if len(this.filteredHosts) > 0 {
-		this.selectedIndex = (this.selectedIndex + 1) % len(this.filteredHosts)
+	if len(this.matches) > 0 {
+		this.selectedIndex = (this.selectedIndex + 1) % len(this.matches)
 	}
 }
+
 func (this *Model) selectPrevious() {
-	if len(this.filteredHosts) > 0 {
-		this.selectedIndex = (this.selectedIndex - 1 + len(this.filteredHosts)) % len(this.filteredHosts)
+	if len(this.matches) > 0 {
+		this.selectedIndex = (this.selectedIndex - 1 + len(this.matches)) % len(this.matches)
 	}
+}
+
+func allHostsAsMatches(hosts []*entity.Host) []hostMatch {
+	matches := make([]hostMatch, len(hosts))
+	for i, h := range hosts {
+		matches[i] = hostMatch{
+			host:          h,
+			detailIndexes: make([][]int, len(h.Details)),
+		}
+	}
+	return matches
+}
+
+func searchHosts(query string, hosts []*entity.Host) []hostMatch {
+	var results []hostMatch
+
+	for _, host := range hosts {
+		m := matchHost(query, host)
+		if m.score > 0 {
+			results = append(results, m)
+		}
+	}
+
+	sort.Slice(results, func(i, j int) bool {
+		return results[i].score > results[j].score
+	})
+
+	return results
+}
+
+func matchHost(query string, host *entity.Host) hostMatch {
+	m := hostMatch{
+		host:          host,
+		detailIndexes: make([][]int, len(host.Details)),
+	}
+
+	if fm := firstMatch(query, string(host.Name)); fm != nil {
+		m.nameIndexes = fm.MatchedIndexes
+		if fm.Score > m.score {
+			m.score = fm.Score
+		}
+	}
+
+	if fm := firstMatch(query, string(host.Username)); fm != nil {
+		m.usernameIndexes = fm.MatchedIndexes
+		if fm.Score > m.score {
+			m.score = fm.Score
+		}
+	}
+
+	if fm := firstMatch(query, string(host.IP)); fm != nil {
+		m.ipIndexes = fm.MatchedIndexes
+		if fm.Score > m.score {
+			m.score = fm.Score
+		}
+	}
+
+	for i, detail := range host.Details {
+		if fm := firstMatch(query, detail); fm != nil {
+			m.detailIndexes[i] = fm.MatchedIndexes
+			if fm.Score > m.score {
+				m.score = fm.Score
+			}
+		}
+	}
+
+	return m
+}
+
+func firstMatch(query, s string) *fuzzy.Match {
+	results := fuzzy.Find(query, []string{s})
+	if len(results) == 0 {
+		return nil
+	}
+	return &results[0]
+}
+
+func renderWithHighlights(s string, matchedIndexes []int) string {
+	if len(matchedIndexes) == 0 {
+		return s
+	}
+
+	indexSet := make(map[int]bool, len(matchedIndexes))
+	for _, i := range matchedIndexes {
+		indexSet[i] = true
+	}
+
+	var sb strings.Builder
+	for i, ch := range s {
+		if indexSet[i] {
+			sb.WriteString(highlightStyle.Render(string(ch)))
+		} else {
+			sb.WriteRune(ch)
+		}
+	}
+	return sb.String()
+}
+
+func buildDetailsString(details []string, detailIndexes [][]int) string {
+	var sb strings.Builder
+
+	for i, detail := range details {
+		var indexes []int
+		if i < len(detailIndexes) {
+			indexes = detailIndexes[i]
+		}
+
+		sb.WriteString(renderWithHighlights(detail, indexes))
+
+		if i != len(details)-1 {
+			sb.WriteString(" | ")
+		}
+	}
+
+	return sb.String()
 }
