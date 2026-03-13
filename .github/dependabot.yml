@@ -1,0 +1,24 @@
+# See: https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+version: 2
+updates:
+  # Enable version updates for Golang
+  - package-ecosystem: "gomod"
+    directory: "/"
+    open-pull-requests-limit: 3
+    commit-message:
+      include: "scope"
+      prefix: "go-dep"
+    schedule:
+      interval: "daily"
+
+  # Enable version updates for GitHub Actions
+  - commit-message:
+      include: "scope"
+      prefix: "github-actions"
+    directory: "/"
+    labels:
+      - "dependency"
+    open-pull-requests-limit: 3
+    package-ecosystem: "github-actions"
+    schedule:
+      interval: "daily"
