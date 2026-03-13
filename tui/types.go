@@ -2,7 +2,60 @@ package tui
 
 import (
 	"github.com/charmbracelet/lipgloss"
+	"github.com/mklbravo/sshp/domain/entity"
+	"github.com/sahilm/fuzzy"
 )
+
+// ###################################
+type filterList []*filterHost
+
+func NewFilterListFromHostEntities(hosts []*entity.Host) filterList {
+	filterHosts := make(filterList, len(hosts))
+	for index, entityHost := range hosts {
+		filterValues := []filterValue{
+			NewFilterValue(string(entityHost.Name), "name"),
+			NewFilterValue(string(entityHost.IP), "ip"),
+			NewFilterValue(string(entityHost.Username), "username"),
+		}
+		for _, hostDetails := range entityHost.Details {
+			filterValues = append(filterValues, NewFilterValue(hostDetails, "detail"))
+		}
+
+		filterHosts[index] = &filterHost{
+			host:         entityHost,
+			filterValues: filterValues,
+		}
+	}
+	return filterHosts
+}
+
+// Returns a new filterList based on current containing only the filterHosts that match the query
+func (this *filterList) Filter(query string) filterList {
+
+	filteredList := make(filterList, 0)
+	for _, fh := range *this {
+		match := fuzzy.FindFrom(query, fh)
+		if len(match) > 0 {
+			matchMap := make(map[int]fuzzy.Match)
+			for _, m := range match {
+				matchMap[m.Index] = m
+			}
+
+			highlightedFilterValues := make([]filterValue, len(fh.filterValues))
+			for index, filterValue := range fh.filterValues {
+				if _, ok := matchMap[index]; ok {
+					highlightedFilterValues[index] = filterValue.AddHighlightIndex(matchMap[index].MatchedIndexes...)
+				} else {
+					highlightedFilterValues[index] = filterValue
+				}
+			}
+
+			filteredList = append(filteredList, NewFilterHost(fh.host, highlightedFilterValues))
+		}
+	}
+
+	return filteredList
+}
 
 // ###################################
 type filterHost struct {
