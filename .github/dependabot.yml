@@ -4,6 +4,8 @@ updates:
   # Enable version updates for Golang
   - package-ecosystem: "gomod"
     directory: "/"
+    labels:
+      - "dependency"
     open-pull-requests-limit: 3
     commit-message:
       include: "scope"
