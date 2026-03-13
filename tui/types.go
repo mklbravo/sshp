@@ -5,6 +5,30 @@ import (
 )
 
 // ###################################
+type filterHost struct {
+	host         *entity.Host
+	filterValues []filterValue
+}
+
+func (this filterHost) Len() int {
+	return len(this.filterValues)
+}
+
+func (this filterHost) String(index int) string {
+	return this.filterValues[index].value
+}
+
+func NewFilterHost(
+	host *entity.Host,
+	filterValues []filterValue,
+) *filterHost {
+	return &filterHost{
+		host:         host,
+		filterValues: filterValues,
+	}
+}
+
+// ###################################
 type filterValue struct {
 	value            string
 	column           string
