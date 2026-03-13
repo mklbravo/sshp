@@ -4,21 +4,23 @@ updates:
   # Enable version updates for Golang
   - package-ecosystem: "gomod"
     directory: "/"
-    open-pull-requests-limit: 3
     commit-message:
       include: "scope"
       prefix: "go-dep"
+    labels:
+      - "dependency"
+    open-pull-requests-limit: 3
     schedule:
       interval: "daily"
 
   # Enable version updates for GitHub Actions
-  - commit-message:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    commit-message:
       include: "scope"
       prefix: "github-actions"
-    directory: "/"
     labels:
       - "dependency"
     open-pull-requests-limit: 3
-    package-ecosystem: "github-actions"
     schedule:
       interval: "daily"
