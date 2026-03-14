@@ -14,7 +14,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-var highlightStyle = colorStyle.yellow.Bold(true)
+var highlightStyle = colorStyle.mauve.Underline(true).Bold(true)
 
 type Model struct {
 	filterHosts   filterList
