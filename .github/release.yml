@@ -1,0 +1,23 @@
+# this file controls how release notes (in particular the changelog) are automatically generated during the creation of a release
+# see https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
+
+changelog:
+  categories:
+    - title: "TUI Improvements 🖥️"
+      labels:
+        - "tui"
+    - title: "Features 🎉"
+      labels:
+        - "enhancement"
+    - title: "Bugfixes 🐞"
+      labels:
+        - "bug"
+    - title: "Continuous Integration 🏗️"
+      labels:
+        - "ci"
+    - title: "Dependencies 📦"
+      labels:
+        - "dependency"
+    - title: "Other Changes"
+      labels:
+        - "*"
