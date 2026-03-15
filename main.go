@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -13,8 +14,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var version = "dev"
+
 func main() {
 	rootCmd := createRootCommand()
+	rootCmd.AddCommand(createVersionCommand())
+
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatalf("Error executing command: %v", err)
 		os.Exit(1)
@@ -65,6 +70,16 @@ func createRootCommand() *cobra.Command {
 				log.Fatalf("Failed to connect to SSH host: %v", err)
 				os.Exit(1)
 			}
+		},
+	}
+}
+
+func createVersionCommand() *cobra.Command {
+	return &cobra.Command{
+		Use:   "version",
+		Short: "Print the version number of SSHP",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println(version)
 		},
 	}
 }
