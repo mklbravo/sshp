@@ -10,12 +10,37 @@ A DevOps utility for managing SSH connections and operations.
 ## Installation
 ### Install via script (recommended):
 
+The script will install latest released version.
+
 ```ssh
    sh -c "$(curl -fsSL https://raw.githubusercontent.com/mklbravo/sshp/main/tools/install.sh)"
 ```
 
 >[!NOTE]
 > Install script will download the binary into `$HOME/.local/bin`. Don't forget to add this folder to your `PATH`
+
+### Build and install locally:
+
+With this method the latest main version will be installed.
+
+1. Clone the repository:
+```ssh 
+git clone https://github.com/mklbravo/sshp.git 
+```
+
+2. `cd` into repository folder
+```ssh 
+cd sshp
+```
+
+3. Execute make job:
+```ssh 
+make install
+```
+
+>[!NOTE]
+> Make job will install the binary into `$HOME/.local/bin`. Don't forget to add this folder to your `PATH`
+
 
 ## Getting Started
 1. Clone the repository:
