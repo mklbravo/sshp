@@ -26,9 +26,9 @@ jobs:
           GOOS=${{ matrix.goos }}
           GOARCH=${{ matrix.goarch }}
           go build
-            -ldflags "-X 'main.version=${{ github.ref_name }}'"
-            -o bin/${{ matrix.goos }}-${{ matrix.goarch }}-sshp
-            ./main.go
+          -ldflags "-X 'main.version=${{ github.ref_name }}'"
+          -o bin/${{ matrix.goos }}-${{ matrix.goarch }}-sshp
+          ./main.go
 
       - name: "Upload artifact"
         uses: "actions/upload-artifact@v7"
