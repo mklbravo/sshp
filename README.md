@@ -7,6 +7,16 @@ A DevOps utility for managing SSH connections and operations.
 - Automate SSH tasks
 - Easy configuration and extensibility
 
+## Installation
+### Install via script (recommended):
+
+```ssh
+   sh -c "$(curl -fsSL https://raw.githubusercontent.com/mklbravo/sshp/main/tools/install.sh)"
+```
+
+>[!NOTE]
+> Install script will download the binary into `$HOME/.local/bin`. Don't forget to add this folder to your `PATH`
+
 ## Getting Started
 1. Clone the repository:
    ```sh
