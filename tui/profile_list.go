@@ -17,33 +17,33 @@ import (
 var highlightStyle = colorStyle.mauve.Underline(true).Bold(true)
 
 type Model struct {
-	filterHosts   filterList
-	matchedHosts  filterList
-	isSubmitted   bool
-	selectedIndex int
-	textInput     textinput.Model
+	filterProfiles  filterList
+	matchedProfiles filterList
+	isSubmitted     bool
+	selectedIndex   int
+	textInput       textinput.Model
 }
 
 func NewProfileListView(profileListUseCase *application.ProfileListUseCase) Model {
 	// Initialize text input
 	textInput := textinput.New()
 	textInput.Focus()
-	textInput.Placeholder = "Type to filter hosts..."
+	textInput.Placeholder = "Type to filter profiles..."
 	textInput.Prompt = "  "
 	textInput.PromptStyle = colorStyle.sapphire
 	textInput.Width = 50
 
-	hosts, _ := profileListUseCase.Execute()
+	profiles, _ := profileListUseCase.Execute()
 	// TODO: handle error
 
-	filterHosts := NewFilterListFromHostEntities(hosts)
+	filterProfiles := NewFilterListFromHostEntities(profiles)
 
 	return Model{
-		filterHosts:   filterHosts,
-		isSubmitted:   false,
-		matchedHosts:  filterHosts, // Initially, all hosts are matched
-		selectedIndex: 0,
-		textInput:     textInput,
+		filterProfiles:  filterProfiles,
+		isSubmitted:     false,
+		matchedProfiles: filterProfiles, // Initially, all profiles are matched
+		selectedIndex:   0,
+		textInput:       textInput,
 	}
 }
 
@@ -75,9 +75,9 @@ func (this Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		default:
 			if this.textInput.Value() == "" {
-				this.matchedHosts = this.filterHosts
+				this.matchedProfiles = this.filterProfiles
 			} else {
-				this.matchedHosts = this.filterHosts.Filter(this.textInput.Value())
+				this.matchedProfiles = this.filterProfiles.Filter(this.textInput.Value())
 			}
 
 			this.selectedIndex = 0
@@ -91,13 +91,13 @@ func (this Model) View() string {
 	// Render the text input
 	result := paddingStyle.smallAll.Render(this.textInput.View())
 
-	if len(this.matchedHosts) == 0 {
-		result += paddingStyle.smallAll.Render("No hosts found.\n")
+	if len(this.matchedProfiles) == 0 {
+		result += paddingStyle.smallAll.Render("No profiles found.\n")
 	}
 
-	hostTable := table.New().Border(lipgloss.HiddenBorder())
+	profileTable := table.New().Border(lipgloss.HiddenBorder())
 
-	for index, filterHost := range this.matchedHosts {
+	for index, filterHost := range this.matchedProfiles {
 		selectionColumnContent := ""
 		if index == this.selectedIndex {
 			selectionColumnContent = colorStyle.mauve.Render("󰁕 ")
@@ -139,7 +139,7 @@ func (this Model) View() string {
 			)
 		}
 
-		hostTable.Row(
+		profileTable.Row(
 			selectionColumnContent,
 			nameColumnStringBuilder.String(),
 			" ", // Spacer column
@@ -151,7 +151,7 @@ func (this Model) View() string {
 		)
 	}
 
-	result += hostTable.Render()
+	result += profileTable.Render()
 
 	result += lipgloss.NewStyle().Foreground(lipgloss.Color("#585b70")).Render("\nPress Esc or Ctrl+C to exit.\n")
 	return result
@@ -162,17 +162,17 @@ func (this *Model) GetSelectedHost() *entity.Profile {
 		return nil
 	}
 
-	return this.matchedHosts[this.selectedIndex].host
+	return this.matchedProfiles[this.selectedIndex].host
 }
 
 func (this *Model) selectNext() {
-	if len(this.matchedHosts) > 0 {
-		this.selectedIndex = (this.selectedIndex + 1) % len(this.matchedHosts)
+	if len(this.matchedProfiles) > 0 {
+		this.selectedIndex = (this.selectedIndex + 1) % len(this.matchedProfiles)
 	}
 }
 
 func (this *Model) selectPrevious() {
-	if len(this.matchedHosts) > 0 {
-		this.selectedIndex = (this.selectedIndex - 1 + len(this.matchedHosts)) % len(this.matchedHosts)
+	if len(this.matchedProfiles) > 0 {
+		this.selectedIndex = (this.selectedIndex - 1 + len(this.matchedProfiles)) % len(this.matchedProfiles)
 	}
 }
