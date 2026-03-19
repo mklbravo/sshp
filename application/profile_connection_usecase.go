@@ -5,18 +5,18 @@ import (
 	"github.com/mklbravo/sshp/domain/entity"
 )
 
-type HostConnectionUseCase struct {
+type ProfileConnectionUseCase struct {
 	conn ports.ConnectionService
 }
 
-func NewHostConnectionUseCase(
+func NewProfileConnectionUseCase(
 	conn ports.ConnectionService,
-) *HostConnectionUseCase {
-	return &HostConnectionUseCase{
+) *ProfileConnectionUseCase {
+	return &ProfileConnectionUseCase{
 		conn: conn,
 	}
 }
 
-func (this *HostConnectionUseCase) Execute(profile *entity.Profile) error {
+func (this *ProfileConnectionUseCase) Execute(profile *entity.Profile) error {
 	return this.conn.ConnectToHost(profile)
 }

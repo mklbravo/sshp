@@ -61,11 +61,11 @@ func createRootCommand() *cobra.Command {
 				os.Exit(0)
 			}
 
-			hostConnectionUC := application.NewHostConnectionUseCase(
+			profileConnectionUC := application.NewProfileConnectionUseCase(
 				ssh.NewSSHConnectionService(),
 			)
 
-			err = hostConnectionUC.Execute(selectedHost)
+			err = profileConnectionUC.Execute(selectedHost)
 			if err != nil {
 				log.Fatalf("Failed to connect to SSH host: %v", err)
 				os.Exit(1)
