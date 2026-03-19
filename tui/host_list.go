@@ -157,7 +157,7 @@ func (this Model) View() string {
 	return result
 }
 
-func (this *Model) GetSelectedHost() *entity.Host {
+func (this *Model) GetSelectedHost() *entity.Profile {
 	if !this.isSubmitted {
 		return nil
 	}

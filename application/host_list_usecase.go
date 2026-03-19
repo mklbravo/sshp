@@ -15,7 +15,7 @@ func NewHostListUseCase(hostRepo repository.HostRepository) *HostListUseCase {
 	}
 }
 
-func (uc *HostListUseCase) Execute() ([]*entity.Host, error) {
+func (uc *HostListUseCase) Execute() ([]*entity.Profile, error) {
 	hostList, err := uc.HostRepository.FindAll()
 	if err != nil {
 		return nil, err

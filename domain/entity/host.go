@@ -6,7 +6,7 @@ import (
 	"github.com/mklbravo/sshp/domain/valueobject"
 )
 
-type Host struct {
+type Profile struct {
 	Group    string
 	ID       int
 	IP       valueobject.IP
@@ -16,7 +16,7 @@ type Host struct {
 	Details  []string
 }
 
-func NewHost(
+func NewProfile(
 	id int,
 	name string,
 	username string,
@@ -24,7 +24,7 @@ func NewHost(
 	port int,
 	group string,
 	details []string,
-) (*Host, error) {
+) (*Profile, error) {
 	hostName := valueobject.HostName(name)
 
 	user := valueobject.Username(username)
@@ -39,7 +39,7 @@ func NewHost(
 		return nil, fmt.Errorf("Invalid port: %w", err)
 	}
 
-	return &Host{
+	return &Profile{
 		Group:    group,
 		ID:       id,
 		IP:       hostIP,
@@ -50,13 +50,13 @@ func NewHost(
 	}, nil
 }
 
-func (this *Host) GetFullAddress() string {
+func (this *Profile) GetFullAddress() string {
 	return fmt.Sprintf("%s:%d",
 		string(this.IP),
 		int(this.Port),
 	)
 }
 
-func (this *Host) HasDetails() bool {
+func (this *Profile) HasDetails() bool {
 	return len(this.Details) > 0
 }

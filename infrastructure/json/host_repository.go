@@ -8,22 +8,22 @@ import (
 )
 
 type JsonHostRepository struct {
-	allHosts     []*entity.Host
-	indexedHosts map[int]*entity.Host
+	allHosts     []*entity.Profile
+	indexedHosts map[int]*entity.Profile
 }
 
 func NewJsonHostRepository(filePath string) (*JsonHostRepository, error) {
 	fileHosts, _ := loadHostsFromFile(filePath)
 
-	var allHosts []*entity.Host
-	var indexedHosts = make(map[int]*entity.Host)
+	var allHosts []*entity.Profile
+	var indexedHosts = make(map[int]*entity.Profile)
 
 	for index, hd := range fileHosts {
 		if hd.Group == "" {
 			hd.Group = "default"
 		}
 
-		host, err := entity.NewHost(
+		host, err := entity.NewProfile(
 			index,
 			hd.Name,
 			hd.User,
@@ -69,14 +69,14 @@ func loadHostsFromFile(filePath string) ([]*hostData, error) {
 	return jsonHosts, nil
 }
 
-func (this *JsonHostRepository) FindByID(id int) (*entity.Host, error) {
+func (this *JsonHostRepository) FindByID(id int) (*entity.Profile, error) {
 	return this.indexedHosts[id], nil
 }
-func (this *JsonHostRepository) FindAll() ([]*entity.Host, error) {
+func (this *JsonHostRepository) FindAll() ([]*entity.Profile, error) {
 	return this.allHosts, nil
 }
 
-func (this *JsonHostRepository) Save(host *entity.Host) error {
+func (this *JsonHostRepository) Save(profile *entity.Profile) error {
 	// TODO
 	return nil
 }

@@ -9,9 +9,9 @@ import (
 // ###################################
 type filterList []*filterHost
 
-func NewFilterListFromHostEntities(hosts []*entity.Host) filterList {
-	filterHosts := make(filterList, len(hosts))
-	for index, entityHost := range hosts {
+func NewFilterListFromHostEntities(profiles []*entity.Profile) filterList {
+	filterHosts := make(filterList, len(profiles))
+	for index, entityHost := range profiles {
 		filterValues := []filterValue{
 			NewFilterValue(string(entityHost.Name), "name"),
 			NewFilterValue(string(entityHost.IP), "ip"),
@@ -59,7 +59,7 @@ func (this *filterList) Filter(query string) filterList {
 
 // ###################################
 type filterHost struct {
-	host         *entity.Host
+	host         *entity.Profile
 	filterValues []filterValue
 }
 
@@ -72,7 +72,7 @@ func (this filterHost) String(index int) string {
 }
 
 func NewFilterHost(
-	host *entity.Host,
+	host *entity.Profile,
 	filterValues []filterValue,
 ) *filterHost {
 	return &filterHost{

@@ -17,6 +17,6 @@ func NewHostConnectionUseCase(
 	}
 }
 
-func (this *HostConnectionUseCase) Execute(host *entity.Host) error {
-	return this.conn.ConnectToHost(host)
+func (this *HostConnectionUseCase) Execute(profile *entity.Profile) error {
+	return this.conn.ConnectToHost(profile)
 }
