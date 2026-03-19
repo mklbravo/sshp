@@ -24,7 +24,7 @@ type Model struct {
 	textInput     textinput.Model
 }
 
-func NewHostListView(hostListUseCase *application.HostListUseCase) Model {
+func NewHostListView(profileListUseCase *application.ProfileListUseCase) Model {
 	// Initialize text input
 	textInput := textinput.New()
 	textInput.Focus()
@@ -33,7 +33,7 @@ func NewHostListView(hostListUseCase *application.HostListUseCase) Model {
 	textInput.PromptStyle = colorStyle.sapphire
 	textInput.Width = 50
 
-	hosts, _ := hostListUseCase.Execute()
+	hosts, _ := profileListUseCase.Execute()
 	// TODO: handle error
 
 	filterHosts := NewFilterListFromHostEntities(hosts)
