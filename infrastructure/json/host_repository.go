@@ -7,12 +7,12 @@ import (
 	"github.com/mklbravo/sshp/domain/entity"
 )
 
-type JsonHostRepository struct {
+type JsonProfileRepository struct {
 	allHosts     []*entity.Profile
 	indexedHosts map[int]*entity.Profile
 }
 
-func NewJsonHostRepository(filePath string) (*JsonHostRepository, error) {
+func NewJsonProfileRepository(filePath string) (*JsonProfileRepository, error) {
 	fileHosts, _ := loadHostsFromFile(filePath)
 
 	var allHosts []*entity.Profile
@@ -41,7 +41,7 @@ func NewJsonHostRepository(filePath string) (*JsonHostRepository, error) {
 		indexedHosts[host.ID] = host
 	}
 
-	return &JsonHostRepository{
+	return &JsonProfileRepository{
 		allHosts:     allHosts,
 		indexedHosts: indexedHosts,
 	}, nil
@@ -69,14 +69,14 @@ func loadHostsFromFile(filePath string) ([]*profileDTO, error) {
 	return jsonProfiles, nil
 }
 
-func (this *JsonHostRepository) FindByID(id int) (*entity.Profile, error) {
+func (this *JsonProfileRepository) FindByID(id int) (*entity.Profile, error) {
 	return this.indexedHosts[id], nil
 }
-func (this *JsonHostRepository) FindAll() ([]*entity.Profile, error) {
+func (this *JsonProfileRepository) FindAll() ([]*entity.Profile, error) {
 	return this.allHosts, nil
 }
 
-func (this *JsonHostRepository) Save(profile *entity.Profile) error {
+func (this *JsonProfileRepository) Save(profile *entity.Profile) error {
 	// TODO
 	return nil
 }

@@ -36,7 +36,7 @@ func createRootCommand() *cobra.Command {
 				log.Fatalf("Failed to load config: %v", err)
 			}
 
-			hostRepository, err := json.NewJsonHostRepository(cfg.DataFilePath)
+			hostRepository, err := json.NewJsonProfileRepository(cfg.DataFilePath)
 			if err != nil {
 				log.Fatalf("Failed to load hosts: %v", err)
 				os.Exit(1)
