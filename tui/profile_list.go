@@ -162,7 +162,7 @@ func (this *Model) GetSelectedHost() *entity.Profile {
 		return nil
 	}
 
-	return this.matchedProfiles[this.selectedIndex].host
+	return this.matchedProfiles[this.selectedIndex].profile
 }
 
 func (this *Model) selectNext() {

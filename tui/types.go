@@ -7,26 +7,26 @@ import (
 )
 
 // ###################################
-type filterList []*filterHost
+type filterList []*filterProfile
 
 func NewFilterListFromHostEntities(profiles []*entity.Profile) filterList {
-	filterHosts := make(filterList, len(profiles))
-	for index, entityHost := range profiles {
+	filterProfiles := make(filterList, len(profiles))
+	for index, entityProfile := range profiles {
 		filterValues := []filterValue{
-			NewFilterValue(string(entityHost.Name), "name"),
-			NewFilterValue(string(entityHost.IP), "ip"),
-			NewFilterValue(string(entityHost.Username), "username"),
+			NewFilterValue(string(entityProfile.Name), "name"),
+			NewFilterValue(string(entityProfile.IP), "ip"),
+			NewFilterValue(string(entityProfile.Username), "username"),
 		}
-		for _, hostDetails := range entityHost.Details {
-			filterValues = append(filterValues, NewFilterValue(hostDetails, "detail"))
+		for _, profileDetails := range entityProfile.Details {
+			filterValues = append(filterValues, NewFilterValue(profileDetails, "detail"))
 		}
 
-		filterHosts[index] = &filterHost{
-			host:         entityHost,
+		filterProfiles[index] = &filterProfile{
+			profile:      entityProfile,
 			filterValues: filterValues,
 		}
 	}
-	return filterHosts
+	return filterProfiles
 }
 
 // Returns a new filterList based on current containing only the filterHosts that match the query
@@ -50,7 +50,7 @@ func (this *filterList) Filter(query string) filterList {
 				}
 			}
 
-			filteredList = append(filteredList, NewFilterHost(fh.host, highlightedFilterValues))
+			filteredList = append(filteredList, NewFilterProfile(fh.profile, highlightedFilterValues))
 		}
 	}
 
@@ -58,25 +58,25 @@ func (this *filterList) Filter(query string) filterList {
 }
 
 // ###################################
-type filterHost struct {
-	host         *entity.Profile
+type filterProfile struct {
+	profile      *entity.Profile
 	filterValues []filterValue
 }
 
-func (this filterHost) Len() int {
+func (this filterProfile) Len() int {
 	return len(this.filterValues)
 }
 
-func (this filterHost) String(index int) string {
+func (this filterProfile) String(index int) string {
 	return this.filterValues[index].value
 }
 
-func NewFilterHost(
-	host *entity.Profile,
+func NewFilterProfile(
+	profile *entity.Profile,
 	filterValues []filterValue,
-) *filterHost {
-	return &filterHost{
-		host:         host,
+) *filterProfile {
+	return &filterProfile{
+		profile:      profile,
 		filterValues: filterValues,
 	}
 }
