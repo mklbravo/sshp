@@ -47,7 +47,7 @@ func NewJsonHostRepository(filePath string) (*JsonHostRepository, error) {
 	}, nil
 }
 
-func loadHostsFromFile(filePath string) ([]*hostData, error) {
+func loadHostsFromFile(filePath string) ([]*profileDTO, error) {
 	fileData, err := os.ReadFile(filePath)
 	if err != nil {
 		file, err := os.Create(filePath)
@@ -57,16 +57,16 @@ func loadHostsFromFile(filePath string) ([]*hostData, error) {
 		file.Write([]byte("[]"))
 		defer file.Close()
 
-		return []*hostData{}, nil
+		return []*profileDTO{}, nil
 	}
 
-	var jsonHosts []*hostData
-	err = json.Unmarshal(fileData, &jsonHosts)
+	var jsonProfiles []*profileDTO
+	err = json.Unmarshal(fileData, &jsonProfiles)
 	if err != nil {
 		return nil, err
 	}
 
-	return jsonHosts, nil
+	return jsonProfiles, nil
 }
 
 func (this *JsonHostRepository) FindByID(id int) (*entity.Profile, error) {
