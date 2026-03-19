@@ -6,20 +6,20 @@ import (
 )
 
 type HostListUseCase struct {
-	HostRepository repository.HostRepository
+	ProfileRepository repository.ProfileRepository
 }
 
-func NewHostListUseCase(hostRepo repository.HostRepository) *HostListUseCase {
+func NewHostListUseCase(profileRepository repository.ProfileRepository) *HostListUseCase {
 	return &HostListUseCase{
-		HostRepository: hostRepo,
+		ProfileRepository: profileRepository,
 	}
 }
 
 func (uc *HostListUseCase) Execute() ([]*entity.Profile, error) {
-	hostList, err := uc.HostRepository.FindAll()
+	profileList, err := uc.ProfileRepository.FindAll()
 	if err != nil {
 		return nil, err
 	}
 
-	return hostList, nil
+	return profileList, nil
 }
