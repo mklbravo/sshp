@@ -1,3 +1,9 @@
+<p align="center">
+    <img src="https://img.shields.io/github/v/release/mklbravo/sshp?style=for-the-badge&logo=github&logoColor=%23cdd6f4&labelColor=%2345475a&color=%23cba6f7">
+    <img src="https://img.shields.io/github/go-mod/go-version/mklbravo/sshp?style=for-the-badge&logo=go&logoColor=%23cdd6f4&labelColor=%2345475a&color=%2389b4fa">
+    <img src="https://img.shields.io/github/actions/workflow/status/mklbravo/sshp/release.yml?style=for-the-badge&labelColor=%2345475a&color=%23a6e3a1">
+</p>
+
 # sshp
 
 A DevOps utility for managing SSH connections and operations.
