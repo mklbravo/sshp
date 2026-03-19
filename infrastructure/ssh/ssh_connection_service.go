@@ -19,8 +19,8 @@ func NewSSHConnectionService() *SSHConnectionService {
 	return &SSHConnectionService{}
 }
 
-func (this *SSHConnectionService) ConnectToHost(host *entity.Host) error {
-	sshSession, err := StartSSHSession(host)
+func (this *SSHConnectionService) ConnectToHost(profile *entity.Profile) error {
+	sshSession, err := StartSSHSession(profile)
 	if err != nil {
 		return err
 	}
@@ -29,11 +29,11 @@ func (this *SSHConnectionService) ConnectToHost(host *entity.Host) error {
 	return nil
 }
 
-func StartSSHSession(host *entity.Host) (*ssh.Session, error) {
+func StartSSHSession(profile *entity.Profile) (*ssh.Session, error) {
 
 	// SSH client configuration
 	config := &ssh.ClientConfig{
-		User: host.Username.GetValue(),
+		User: profile.Username.GetValue(),
 		Auth: []ssh.AuthMethod{
 			ssh.PublicKeys(getPrivateKeySigner()), // Use private key for authentication
 		},
@@ -41,7 +41,7 @@ func StartSSHSession(host *entity.Host) (*ssh.Session, error) {
 	}
 
 	// Connect to the SSH server
-	client, err := ssh.Dial("tcp", host.GetFullAddress(), config)
+	client, err := ssh.Dial("tcp", profile.GetFullAddress(), config)
 	if err != nil {
 		return nil, err
 	}

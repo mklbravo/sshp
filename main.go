@@ -36,17 +36,17 @@ func createRootCommand() *cobra.Command {
 				log.Fatalf("Failed to load config: %v", err)
 			}
 
-			hostRepository, err := json.NewJsonHostRepository(cfg.DataFilePath)
+			hostRepository, err := json.NewJsonProfileRepository(cfg.DataFilePath)
 			if err != nil {
 				log.Fatalf("Failed to load hosts: %v", err)
 				os.Exit(1)
 			}
 
-			hostListUC := application.NewHostListUseCase(hostRepository)
+			profileListUC := application.NewProfileListUseCase(hostRepository)
 
-			hostListView := tui.NewHostListView(hostListUC)
+			profileListView := tui.NewProfileListView(profileListUC)
 
-			tuiProgram := tea.NewProgram(hostListView)
+			tuiProgram := tea.NewProgram(profileListView)
 
 			teaModel, err := tuiProgram.Run()
 
@@ -61,11 +61,11 @@ func createRootCommand() *cobra.Command {
 				os.Exit(0)
 			}
 
-			hostConnectionUC := application.NewHostConnectionUseCase(
+			profileConnectionUC := application.NewProfileConnectionUseCase(
 				ssh.NewSSHConnectionService(),
 			)
 
-			err = hostConnectionUC.Execute(selectedHost)
+			err = profileConnectionUC.Execute(selectedHost)
 			if err != nil {
 				log.Fatalf("Failed to connect to SSH host: %v", err)
 				os.Exit(1)

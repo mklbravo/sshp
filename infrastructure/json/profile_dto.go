@@ -1,6 +1,6 @@
 package json
 
-type hostData struct {
+type profileDTO struct {
 	Address string   `json:"address"`
 	Group   string   `json:"group,omitempty"`
 	Name    string   `json:"name"`

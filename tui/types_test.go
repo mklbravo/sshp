@@ -9,9 +9,9 @@ import (
 )
 
 // ################################
-// FilterHost tests
-func TestNewFilterHost(t *testing.T) {
-	hostEntity := &entity.Host{
+// FilterProfile tests
+func TestNewFilterProfile(t *testing.T) {
+	profileEntity := &entity.Profile{
 		Name: "foo",
 		IP:   "bar",
 	}
@@ -19,14 +19,14 @@ func TestNewFilterHost(t *testing.T) {
 		NewFilterValue("foo", "name"),
 		NewFilterValue("bar", "ip"),
 	}
-	host := NewFilterHost(hostEntity, values)
-	assert.Same(t, hostEntity, host.host)
-	assert.NotNil(t, host)
-	assert.Equal(t, values, host.filterValues)
+	profile := NewFilterProfile(profileEntity, values)
+	assert.Same(t, profileEntity, profile.profile)
+	assert.NotNil(t, profile)
+	assert.Equal(t, values, profile.filterValues)
 }
 
-func TestFilterHost_Len(t *testing.T) {
-	hostEntity := &entity.Host{
+func TestFilterProfile_Len(t *testing.T) {
+	profileEntity := &entity.Profile{
 		Name: "foo",
 		IP:   "bar",
 	}
@@ -34,12 +34,12 @@ func TestFilterHost_Len(t *testing.T) {
 		NewFilterValue("foo", "name"),
 		NewFilterValue("bar", "ip"),
 	}
-	host := NewFilterHost(hostEntity, values)
-	assert.Equal(t, 2, host.Len())
+	profile := NewFilterProfile(profileEntity, values)
+	assert.Equal(t, 2, profile.Len())
 }
 
-func TestFilterHost_String(t *testing.T) {
-	hostEntity := &entity.Host{
+func TestFilterProfile_String(t *testing.T) {
+	profileEntity := &entity.Profile{
 		Name: "foo",
 		IP:   "bar",
 	}
@@ -47,9 +47,9 @@ func TestFilterHost_String(t *testing.T) {
 		NewFilterValue("foo", "name"),
 		NewFilterValue("bar", "ip"),
 	}
-	host := NewFilterHost(hostEntity, values)
-	assert.Equal(t, "foo", host.String(0))
-	assert.Equal(t, "bar", host.String(1))
+	profile := NewFilterProfile(profileEntity, values)
+	assert.Equal(t, "foo", profile.String(0))
+	assert.Equal(t, "bar", profile.String(1))
 }
 
 // ################################
