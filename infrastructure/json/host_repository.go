@@ -8,22 +8,22 @@ import (
 )
 
 type JsonProfileRepository struct {
-	allHosts     []*entity.Profile
-	indexedHosts map[int]*entity.Profile
+	allProfiles     []*entity.Profile
+	indexedProfiles map[int]*entity.Profile
 }
 
 func NewJsonProfileRepository(filePath string) (*JsonProfileRepository, error) {
-	fileHosts, _ := loadHostsFromFile(filePath)
+	fileProfiles, _ := loadProfilesFromFile(filePath)
 
-	var allHosts []*entity.Profile
-	var indexedHosts = make(map[int]*entity.Profile)
+	var allProfiles []*entity.Profile
+	var indexedProfiles = make(map[int]*entity.Profile)
 
-	for index, hd := range fileHosts {
+	for index, hd := range fileProfiles {
 		if hd.Group == "" {
 			hd.Group = "default"
 		}
 
-		host, err := entity.NewProfile(
+		profile, err := entity.NewProfile(
 			index,
 			hd.Name,
 			hd.User,
@@ -37,17 +37,17 @@ func NewJsonProfileRepository(filePath string) (*JsonProfileRepository, error) {
 			return nil, err
 		}
 
-		allHosts = append(allHosts, host)
-		indexedHosts[host.ID] = host
+		allProfiles = append(allProfiles, profile)
+		indexedProfiles[profile.ID] = profile
 	}
 
 	return &JsonProfileRepository{
-		allHosts:     allHosts,
-		indexedHosts: indexedHosts,
+		allProfiles:     allProfiles,
+		indexedProfiles: indexedProfiles,
 	}, nil
 }
 
-func loadHostsFromFile(filePath string) ([]*profileDTO, error) {
+func loadProfilesFromFile(filePath string) ([]*profileDTO, error) {
 	fileData, err := os.ReadFile(filePath)
 	if err != nil {
 		file, err := os.Create(filePath)
@@ -70,10 +70,10 @@ func loadHostsFromFile(filePath string) ([]*profileDTO, error) {
 }
 
 func (this *JsonProfileRepository) FindByID(id int) (*entity.Profile, error) {
-	return this.indexedHosts[id], nil
+	return this.indexedProfiles[id], nil
 }
 func (this *JsonProfileRepository) FindAll() ([]*entity.Profile, error) {
-	return this.allHosts, nil
+	return this.allProfiles, nil
 }
 
 func (this *JsonProfileRepository) Save(profile *entity.Profile) error {
