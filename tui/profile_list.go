@@ -24,7 +24,7 @@ type Model struct {
 	textInput     textinput.Model
 }
 
-func NewHostListView(profileListUseCase *application.ProfileListUseCase) Model {
+func NewProfileListView(profileListUseCase *application.ProfileListUseCase) Model {
 	// Initialize text input
 	textInput := textinput.New()
 	textInput.Focus()

@@ -44,9 +44,9 @@ func createRootCommand() *cobra.Command {
 
 			profileListUC := application.NewProfileListUseCase(hostRepository)
 
-			hostListView := tui.NewHostListView(profileListUC)
+			profileListView := tui.NewProfileListView(profileListUC)
 
-			tuiProgram := tea.NewProgram(hostListView)
+			tuiProgram := tea.NewProgram(profileListView)
 
 			teaModel, err := tuiProgram.Run()
 
