@@ -60,3 +60,9 @@ func (this *Profile) GetFullAddress() string {
 func (this *Profile) HasDetails() bool {
 	return len(this.Details) > 0
 }
+
+// IsSame checks if two profiles are the same based on their username and IP address.
+func (this *Profile) IsSame(other *Profile) bool {
+	return this.Username == other.Username &&
+		this.IP == other.IP
+}
