@@ -2,6 +2,7 @@ package json
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 
 	"github.com/mklbravo/sshp/domain/entity"
@@ -9,6 +10,7 @@ import (
 
 type JsonProfileRepository struct {
 	allProfiles     []*entity.Profile
+	filePath        string
 	indexedProfiles map[int]*entity.Profile
 }
 
@@ -44,6 +46,7 @@ func NewJsonProfileRepository(filePath string) (*JsonProfileRepository, error) {
 	return &JsonProfileRepository{
 		allProfiles:     allProfiles,
 		indexedProfiles: indexedProfiles,
+		filePath:        filePath,
 	}, nil
 }
 
@@ -76,7 +79,45 @@ func (this *JsonProfileRepository) FindAll() ([]*entity.Profile, error) {
 	return this.allProfiles, nil
 }
 
-func (this *JsonProfileRepository) Save(profile *entity.Profile) error {
-	// TODO
+func (this *JsonProfileRepository) Save(newProfile *entity.Profile) error {
+	// Check if profile already exists
+	for _, existing := range this.allProfiles {
+		if newProfile.IsSame(existing) {
+			return fmt.Errorf(
+				"Profile with for User '%s' on IP '%s' already exists [%s]",
+				existing.Username,
+				existing.IP,
+				existing.Name,
+			)
+		}
+	}
+
+	newProfile.ID = len(this.allProfiles) // Assign new ID based on current count
+
+	// Add to in-memory collections
+	this.allProfiles = append(this.allProfiles, newProfile)
+	this.indexedProfiles[newProfile.ID] = newProfile
+
+	// Convert all profiles to DTOs
+	var jsonProfiles []*profileDTO
+	for _, profile := range this.allProfiles {
+		jsonProfiles = append(jsonProfiles, &profileDTO{
+			Name:    string(profile.Name),
+			User:    string(profile.Username),
+			Address: string(profile.IP),
+			Port:    int(profile.Port),
+			Group:   profile.Group,
+			Details: profile.Details,
+		})
+	}
+
+	// Marshal and save
+	data, err := json.MarshalIndent(jsonProfiles, "", "  ")
+	if err != nil {
+		return err
+	}
+	if err := os.WriteFile(this.filePath, data, 0664); err != nil {
+		return err
+	}
 	return nil
 }
