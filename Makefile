@@ -37,5 +37,5 @@ install: ## Installs the Go dependencies
 	@docker compose --project-directory .devenv up -d
 	@docker compose --project-directory .devenv exec main \
 		env GOOS=$(OS) GOARCH=$(ARCH) \
-		go build  -ldflags "-X 'main.version=$$(git describe --tags --always --dirty)'" -o sshp main.go
+		go build  -ldflags "-X 'github.com/mklbravo/sshp/cmd.version=$$(git describe --tags --always --dirty)'" -o sshp main.go
 	@mv sshp ~/.local/bin/sshp
