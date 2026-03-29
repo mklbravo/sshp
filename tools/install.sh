@@ -1,5 +1,21 @@
 #!/bin/bash
 
+setup_path_if_needed() {
+    if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
+        case "$SHELL" in
+            */bash) config_file="$HOME/.bashrc" ;;
+            */zsh) config_file="$HOME/.zshrc" ;;
+            *) config_file="$HOME/.profile" ;;
+        esac
+
+        echo "export PATH=\"$INSTALL_DIR:\$PATH\"" >> "$config_file"
+        echo "Added '$INSTALL_DIR' to your PATH in $config_file"
+        echo "Restart your shell or run 'source $config_file' to use it immediately"
+    else
+        echo "'$INSTALL_DIR' is already in your PATH"
+    fi
+}
+
 # Detect OS
 OS=$(uname -s)
 ARCH=$(uname -m)
@@ -44,8 +60,7 @@ APP_PATH="${INSTALL_DIR}/${APP_NAME}"
 if curl -L "$DOWNLOAD_URL" -o "${APP_PATH}"; then
     chmod +x "${APP_PATH}"
     echo "'${APP_NAME}' installed in '${INSTALL_DIR}'"
-    # TODO: Add install dir to $PATH if is not already there
-    echo "!!! Do not forget to add '${INSTALL_DIR}' to your \$PATH !!!"
+    setup_path_if_needed
 else
     echo "Error: Failed to download '${APP_NAME}'"
     exit 1
