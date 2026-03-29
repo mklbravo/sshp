@@ -86,3 +86,85 @@ func TestFilterValue_GetHightlightedString_WithHighlight(t *testing.T) {
 	// Since lipgloss.StyleRanges returns a styled string, we just check it's not empty and contains the base value
 	assert.Contains(t, result, "test")
 }
+
+// ################################
+// FilterList tests
+func TestNewFilterListFromHostEntities(t *testing.T) {
+	profiles := []*entity.Profile{
+		{
+			Name:     "example.com",
+			IP:       "192.168.1.1",
+			Username: "user",
+			Details:  []string{"detail1"},
+		},
+		{
+			Name:     "test.com",
+			IP:       "10.0.0.1",
+			Username: "admin",
+			Details:  []string{},
+		},
+	}
+
+	filterList := NewFilterListFromHostEntities(profiles)
+
+	assert.Len(t, filterList, 2)
+	assert.Equal(t, "example.com", filterList[0].filterValues[0].value)
+	assert.Equal(t, "192.168.1.1", filterList[0].filterValues[1].value)
+	assert.Equal(t, "user", filterList[0].filterValues[2].value)
+	assert.Equal(t, "detail1", filterList[0].filterValues[3].value)
+	assert.Len(t, filterList[1].filterValues, 3) // no details
+}
+
+func TestFilterList_Filter_NoQuery(t *testing.T) {
+	profiles := []*entity.Profile{
+		{
+			Name:     "example.com",
+			IP:       "192.168.1.1",
+			Username: "user",
+		},
+	}
+
+	filterList := NewFilterListFromHostEntities(profiles)
+	filtered := filterList.Filter("")
+
+	assert.Len(t, filtered, 1)
+	assert.Equal(t, filterList[0], filtered[0])
+}
+
+func TestFilterList_Filter_WithMatch(t *testing.T) {
+	profiles := []*entity.Profile{
+		{
+			Name:     "example.com",
+			IP:       "192.168.1.1",
+			Username: "user",
+		},
+		{
+			Name:     "test.com",
+			IP:       "10.0.0.1",
+			Username: "admin",
+		},
+	}
+
+	filterList := NewFilterListFromHostEntities(profiles)
+	filtered := filterList.Filter("example")
+
+	assert.Len(t, filtered, 1)
+	assert.Equal(t, "example.com", string(filtered[0].profile.Name))
+	// Check highlighting
+	assert.NotEmpty(t, filtered[0].filterValues[0].highlightIndexes)
+}
+
+func TestFilterList_Filter_NoMatch(t *testing.T) {
+	profiles := []*entity.Profile{
+		{
+			Name:     "example.com",
+			IP:       "192.168.1.1",
+			Username: "user",
+		},
+	}
+
+	filterList := NewFilterListFromHostEntities(profiles)
+	filtered := filterList.Filter("nomatch")
+
+	assert.Len(t, filtered, 0)
+}

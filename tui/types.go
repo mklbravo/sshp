@@ -35,7 +35,7 @@ func (this *filterList) Filter(query string) filterList {
 	filteredList := make(filterList, 0)
 	for _, fh := range *this {
 		match := fuzzy.FindFrom(query, fh)
-		if len(match) > 0 {
+		if len(match) > 0 || query == "" {
 			matchMap := make(map[int]fuzzy.Match)
 			for _, m := range match {
 				matchMap[m.Index] = m
@@ -43,8 +43,12 @@ func (this *filterList) Filter(query string) filterList {
 
 			highlightedFilterValues := make([]filterValue, len(fh.filterValues))
 			for index, filterValue := range fh.filterValues {
-				if _, ok := matchMap[index]; ok {
-					highlightedFilterValues[index] = filterValue.AddHighlightIndex(matchMap[index].MatchedIndexes...)
+				if query != "" {
+					if _, ok := matchMap[index]; ok {
+						highlightedFilterValues[index] = filterValue.AddHighlightIndex(matchMap[index].MatchedIndexes...)
+					} else {
+						highlightedFilterValues[index] = filterValue
+					}
 				} else {
 					highlightedFilterValues[index] = filterValue
 				}
