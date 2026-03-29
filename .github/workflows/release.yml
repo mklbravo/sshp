@@ -26,7 +26,7 @@ jobs:
           GOOS=${{ matrix.goos }}
           GOARCH=${{ matrix.goarch }}
           go build
-          -ldflags "-X 'main.version=${{ github.ref_name }}'"
+          -ldflags "-X 'github.com/mklbravo/sshp/cmd.version=${{ github.ref_name }}'"
           -o bin/${{ matrix.goos }}-${{ matrix.goarch }}-sshp
           ./main.go
 
