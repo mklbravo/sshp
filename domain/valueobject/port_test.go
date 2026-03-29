@@ -1,25 +1,66 @@
 package valueobject
 
-import "testing"
+import (
+	"testing"
 
-func TestNewPort_Valid(t *testing.T) {
-	portNum := 22
-	port, err := NewPort(portNum)
-	if err != nil {
-		t.Fatalf("expected no error, got %v", err)
-	}
-	if int(port) != portNum {
-		t.Errorf("expected %d, got %d", portNum, port)
-	}
-}
+	"github.com/stretchr/testify/assert"
+)
 
-func TestNewPort_Invalid(t *testing.T) {
-	_, err := NewPort(0)
-	if err == nil {
-		t.Fatal("expected error for invalid port, got nil")
+func TestNewPort(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   int
+		want    int
+		wantErr bool
+	}{
+		{
+			name:    "valid port",
+			input:   22,
+			want:    22,
+			wantErr: false,
+		},
+		{
+			name:    "minimum port",
+			input:   1,
+			want:    1,
+			wantErr: false,
+		},
+		{
+			name:    "maximum port",
+			input:   65535,
+			want:    65535,
+			wantErr: false,
+		},
+		{
+			name:    "port zero",
+			input:   0,
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name:    "negative port",
+			input:   -1,
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name:    "port too high",
+			input:   70000,
+			want:    0,
+			wantErr: true,
+		},
 	}
-	_, err = NewPort(70000)
-	if err == nil {
-		t.Fatal("expected error for invalid port, got nil")
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			port, err := NewPort(tt.input)
+			if tt.wantErr {
+				assert.Error(t, err)
+				assert.Equal(t, Port(0), port)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.want, int(port))
+			}
+		})
 	}
 }
