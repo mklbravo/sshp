@@ -10,10 +10,16 @@ else
 	GOARCH := $(ARCH)
 endif
 
+# ###########################################################################################################
+# Makefile helper targets
+# ###########################################################################################################
 .PHONY: help
 help: ## Displays this list of targets with descriptions
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}'
 
+# ###########################################################################################################
+# Makefile targets for managing the development environment
+# ###########################################################################################################
 .PHONY: devenv-build
 devenv-build: ## Build the development environment
 	@docker compose --project-directory .devenv build
@@ -34,6 +40,9 @@ devenv-stop: ## Stops the development environment
 devenv-down: ## Stops and removes the development environment containers
 	@docker compose --project-directory .devenv down --remove-orphans
 
+# ###########################################################################################################
+# Makefile targets for building and installing the Go application
+# ###########################################################################################################
 .PHONY: install
 install: ## Installs the Go dependencies
 	$(info Building for OS:$(OS) ARCH:$(ARCH))
