@@ -1,8 +1,9 @@
-# ./.tmuxinator.yml
-
+---
 name: "sshp"
+
+pre_window: "make devenv-shell"
 
 windows:
   - editor:
-    - nvim
-  - shell: clear
+    - "nvim"
+  - shell: "clear"
