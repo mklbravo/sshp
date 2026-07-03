@@ -14,7 +14,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-var highlightStyle = colorStyle.mauve.Underline(true).Bold(true)
+var highlightStyle = colorStyle.highlight.Underline(true).Bold(true)
 
 type Model struct {
 	filterProfiles  filterList
@@ -30,7 +30,7 @@ func NewProfileListView(profileListUseCase *application.ProfileListUseCase) Mode
 	textInput.Focus()
 	textInput.Placeholder = "Type to filter profiles..."
 	textInput.Prompt = "  "
-	textInput.PromptStyle = colorStyle.sapphire
+	textInput.PromptStyle = colorStyle.accent
 	textInput.Width = 50
 
 	profiles, _ := profileListUseCase.Execute()
@@ -100,17 +100,17 @@ func (this Model) View() string {
 	for index, filterHost := range this.matchedProfiles {
 		selectionColumnContent := ""
 		if index == this.selectedIndex {
-			selectionColumnContent = colorStyle.mauve.Render("󰁕 ")
+			selectionColumnContent = colorStyle.highlight.Render("󰁕 ")
 		}
 
 		nameColumnStringBuilder := &strings.Builder{}
-		nameColumnStringBuilder.WriteString(colorStyle.sapphire.Render("󰍹 "))
+		nameColumnStringBuilder.WriteString(colorStyle.accent.Render("󰍹 "))
 
 		usernameColumnStringBuilder := &strings.Builder{}
-		usernameColumnStringBuilder.WriteString(colorStyle.teal.Render(" "))
+		usernameColumnStringBuilder.WriteString(colorStyle.secondary.Render(" "))
 
 		ipColumnStringBuilder := &strings.Builder{}
-		ipColumnStringBuilder.WriteString(colorStyle.sky.Render(" "))
+		ipColumnStringBuilder.WriteString(colorStyle.secondary.Render(" "))
 
 		detailColumnStringBuilder := &strings.Builder{}
 
@@ -134,7 +134,7 @@ func (this Model) View() string {
 		detailsColumnContent := ""
 		if detailColumnStringBuilder.Len() > 0 {
 			detailsColumnContent = fmt.Sprintf("%s %s",
-				colorStyle.sky.Render(" "),
+				colorStyle.secondary.Render(" "),
 				detailColumnStringBuilder.String(),
 			)
 		}
@@ -153,7 +153,7 @@ func (this Model) View() string {
 
 	result += profileTable.Render()
 
-	result += lipgloss.NewStyle().Foreground(lipgloss.Color("#585b70")).Render("\nPress Esc or Ctrl+C to exit.\n")
+	result += colorStyle.muted.Render("\nPress Esc or Ctrl+C to exit.\n")
 	return result
 }
 
