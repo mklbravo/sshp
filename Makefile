@@ -18,9 +18,12 @@ help: ## Displays this list of targets with descriptions
 devenv-build: ## Build the development environment
 	@docker compose --project-directory .devenv build
 
-.PHONY: devenv-start
-devenv-start: ## Starts the development environment and logs into main container
+.PHONY: devenv-up
+devenv-up: ## Starts the development environment
 	@docker compose --project-directory .devenv up -d
+
+.PHONY: devenv-shell
+devenv-shell: devenv-up ## Starts a shell into main container
 	@docker compose --project-directory .devenv exec main zsh
 
 .PHONY: devenv-stop
