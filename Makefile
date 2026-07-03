@@ -16,7 +16,7 @@ help: ## Displays this list of targets with descriptions
 
 .PHONY: devenv-build
 devenv-build: ## Build the development environment
-	@docker compose --project-directory .devenv build --pull
+	@docker compose --project-directory .devenv build
 
 .PHONY: devenv-start
 devenv-start: ## Starts the development environment and logs into main container
