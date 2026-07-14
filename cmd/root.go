@@ -21,6 +21,7 @@ func createRootCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "sshp",
 		Short: "SSHP is a terminal-based SSH host manager and connector.",
+		Args:  cobra.MaximumNArgs(1), // Allow at most one argument for initial filter
 		Run: func(cmd *cobra.Command, args []string) {
 			cfg, err := config.Load()
 			if err != nil {
@@ -34,7 +35,16 @@ func createRootCommand() *cobra.Command {
 			}
 
 			profileListUC := application.NewProfileListUseCase(hostRepository)
-			profileListView := tui.NewProfileListView(profileListUC)
+			initialFilterValue := ""
+			if len(args) > 0 {
+				initialFilterValue = args[0]
+			}
+
+			profileListView := tui.NewProfileListView(
+				profileListUC,
+				initialFilterValue,
+			)
+
 			tuiProgram := tea.NewProgram(profileListView)
 			teaModel, err := tuiProgram.Run()
 			if err != nil {
