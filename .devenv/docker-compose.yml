@@ -8,7 +8,5 @@ services:
     image: "ghcr.io/mklbravo/devimage:go-1.26"
     volumes:
       - "../:/src"
-      - "~/.config/github-copilot:/root/.config/github-copilot"
-      - "${SSH_PRIVATE_KEY}.pub:/root/.ssh/id_rsa.pub:ro"
     working_dir: "/src"
 
