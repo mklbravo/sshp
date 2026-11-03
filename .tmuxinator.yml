@@ -1,6 +1,8 @@
 ---
 name: "sshp"
 
+on_project_start: "make devenv-up"
+
 pre_window: "make devenv-shell"
 
 windows:
