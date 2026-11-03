@@ -46,7 +46,7 @@ func NewProfileListView(
 
 	return Model{
 		filterProfiles:  filterProfiles,
-		isSubmitted:     len(matchedProfiles) == 1, // auto-submit if only one profile matches the initial filter
+		isSubmitted:     initialValue != "" && len(matchedProfiles) == 1, // Auto-submit only for an explicit filter with one match.
 		matchedProfiles: matchedProfiles,
 		selectedIndex:   0,
 		textInput:       textInput,
