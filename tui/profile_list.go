@@ -24,7 +24,11 @@ type Model struct {
 	textInput       textinput.Model
 }
 
-func NewProfileListView(profileListUseCase *application.ProfileListUseCase) Model {
+func NewProfileListView(
+	profileListUseCase *application.ProfileListUseCase,
+	initialValue string,
+) Model {
+
 	// Initialize text input
 	textInput := textinput.New()
 	textInput.Focus()
@@ -32,22 +36,28 @@ func NewProfileListView(profileListUseCase *application.ProfileListUseCase) Mode
 	textInput.Prompt = "  "
 	textInput.PromptStyle = colorStyle.accent
 	textInput.Width = 50
+	textInput.SetValue(initialValue)
 
 	profiles, _ := profileListUseCase.Execute()
 	// TODO: handle error
 
 	filterProfiles := NewFilterListFromHostEntities(profiles)
+	matchedProfiles := filterProfiles.Filter(initialValue)
 
 	return Model{
 		filterProfiles:  filterProfiles,
-		isSubmitted:     false,
-		matchedProfiles: filterProfiles, // Initially, all profiles are matched
+		isSubmitted:     initialValue != "" && len(matchedProfiles) == 1, // Auto-submit only for an explicit filter with one match.
+		matchedProfiles: matchedProfiles,
 		selectedIndex:   0,
 		textInput:       textInput,
 	}
 }
 
 func (this Model) Init() tea.Cmd {
+	if this.isSubmitted {
+		return tea.Batch(tea.ClearScreen, tea.Quit)
+
+	}
 	return tea.Batch(tea.ClearScreen, textinput.Blink)
 }
 
