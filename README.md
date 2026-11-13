@@ -79,6 +79,19 @@ go run main.go # From project root
 - Use keyboard navigation and fuzzy search to manage SSH profiles.
 - Make sure you have a valid `hosts.json` as described above.
 
+### SSH authentication
+
+SSHP first tries the keys available through `ssh-agent` using `SSH_AUTH_SOCK`.
+Load your key into the agent with `ssh-add` before connecting.
+
+If the agent is unavailable, has no keys, or its keys are rejected, SSHP falls
+back to `~/.ssh/id_ed25519`, `~/.ssh/id_rsa`, and `~/.ssh/id_ecdsa`, in that order.
+Local private keys are only read when needed; encrypted keys must be loaded into
+the agent because SSHP does not prompt for a passphrase.
+
+The server's authentication attempt limit still applies: too many rejected agent
+keys can cause the server to disconnect before local keys are tried.
+
 ## Development Environment (Optional)
 - For isolated, reproducible dev environments (using Docker Compose):
   ```sh
