@@ -1,14 +1,19 @@
 package ssh
 
 import (
+	"errors"
+	"fmt"
 	"log"
+	"net"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"syscall"
+	"time"
 
 	"github.com/mklbravo/sshp/domain/entity"
 	"golang.org/x/crypto/ssh"
+	"golang.org/x/crypto/ssh/agent"
 	"golang.org/x/term"
 )
 
@@ -30,12 +35,14 @@ func (this *SSHConnectionService) ConnectToHost(profile *entity.Profile) error {
 }
 
 func StartSSHSession(profile *entity.Profile) (*ssh.Session, error) {
+	auth, closeAgent := newPublicKeyAuthentication()
+	defer closeAgent()
 
 	// SSH client configuration
 	config := &ssh.ClientConfig{
 		User: profile.Username.GetValue(),
 		Auth: []ssh.AuthMethod{
-			ssh.PublicKeys(getPrivateKeySigner()), // Use private key for authentication
+			auth,
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(), // WARNING: for testing only
 	}
@@ -117,11 +124,47 @@ func RunSSHShell(this *ssh.Session) {
 	this.Wait()
 }
 
-func getPrivateKeySigner() ssh.Signer {
-	homeFolder := os.Getenv("HOME")
+func newPublicKeyAuthentication() (ssh.AuthMethod, func()) {
+	var agentConnection net.Conn
+	agentAttempted := false
+	filesAttempted := false
 
-	if homeFolder == "" {
-		log.Fatalf("HOME environment variable is not set")
+	signers := func() ([]ssh.Signer, error) {
+		if !agentAttempted {
+			agentAttempted = true
+			if socket := os.Getenv("SSH_AUTH_SOCK"); socket != "" {
+				connection, err := net.DialTimeout("unix", socket, 5*time.Second)
+				if err == nil {
+					agentConnection = connection
+					keys, err := agent.NewClient(connection).Signers()
+					if err == nil && len(keys) > 0 {
+						return keys, nil
+					}
+				}
+			}
+		}
+
+		if filesAttempted {
+			return nil, nil
+		}
+		filesAttempted = true
+		return getPrivateKeySigners()
+	}
+
+	// Both sources use publickey authentication, so retry the same method
+	// to load local keys only after the agent's keys have been rejected.
+	auth := ssh.RetryableAuthMethod(ssh.PublicKeysCallback(signers), 2)
+	return auth, func() {
+		if agentConnection != nil {
+			agentConnection.Close()
+		}
+	}
+}
+
+func getPrivateKeySigners() ([]ssh.Signer, error) {
+	homeFolder, err := os.UserHomeDir()
+	if err != nil {
+		return nil, fmt.Errorf("find home directory for SSH keys: %w", err)
 	}
 
 	privateKeyCandidates := []string{
@@ -130,22 +173,30 @@ func getPrivateKeySigner() ssh.Signer {
 		"id_ecdsa",
 	}
 
+	var signers []ssh.Signer
+	var keyErrors []error
 	for _, keyFile := range privateKeyCandidates {
-
 		keyPath := filepath.Join(homeFolder, ".ssh", keyFile)
 		key, err := os.ReadFile(keyPath)
 		if err != nil {
-			// Try the next candidate if the file doesn't exist
+			if !errors.Is(err, os.ErrNotExist) {
+				keyErrors = append(keyErrors, fmt.Errorf("read private key %s: %w", keyPath, err))
+			}
 			continue
 		}
 		signer, err := ssh.ParsePrivateKey(key)
 		if err != nil {
-			log.Fatalf("Unable to parse private key (%s): %v", keyPath, err)
+			keyErrors = append(keyErrors, fmt.Errorf("parse private key %s: %w", keyPath, err))
+			continue
 		}
-
-		return signer
+		signers = append(signers, signer)
 	}
 
-	log.Fatalf("No valid private key found in ~/.ssh/")
-	return nil
+	if len(signers) > 0 {
+		return signers, nil
+	}
+	if len(keyErrors) > 0 {
+		return nil, fmt.Errorf("load local SSH private keys: %w", errors.Join(keyErrors...))
+	}
+	return nil, errors.New("agent authentication unavailable or unsuccessful and no private key found in ~/.ssh/")
 }
