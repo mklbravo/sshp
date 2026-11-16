@@ -52,16 +52,36 @@ fi
 
 # Create install directory if it doesn't exist
 INSTALL_DIR="$HOME/.local/bin"
-mkdir -p "$INSTALL_DIR"
+if ! mkdir -p "$INSTALL_DIR"; then
+    echo "Error: Failed to create install directory '$INSTALL_DIR'"
+    exit 1
+fi
 
 APP_NAME="sshp"
 APP_PATH="${INSTALL_DIR}/${APP_NAME}"
 
-if curl -L "$DOWNLOAD_URL" -o "${APP_PATH}"; then
-    chmod +x "${APP_PATH}"
-    echo "'${APP_NAME}' installed in '${INSTALL_DIR}'"
-    setup_path_if_needed
-else
+# Use a new file on the same filesystem to avoid stale macOS signature caches.
+TEMP_PATH=$(mktemp "${INSTALL_DIR}/.${APP_NAME}.XXXXXX") || {
+    echo "Error: Failed to create temporary download file"
+    exit 1
+}
+trap 'rm -f "$TEMP_PATH"' EXIT
+trap 'exit 1' HUP INT TERM
+
+if ! curl --fail --show-error --location "$DOWNLOAD_URL" -o "$TEMP_PATH"; then
     echo "Error: Failed to download '${APP_NAME}'"
     exit 1
 fi
+
+if ! chmod 755 "$TEMP_PATH"; then
+    echo "Error: Failed to make '${APP_NAME}' executable"
+    exit 1
+fi
+
+if ! mv -f "$TEMP_PATH" "$APP_PATH"; then
+    echo "Error: Failed to install '${APP_NAME}'"
+    exit 1
+fi
+
+echo "'${APP_NAME}' installed in '${INSTALL_DIR}'"
+setup_path_if_needed
